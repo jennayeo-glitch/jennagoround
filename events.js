@@ -85,7 +85,7 @@ const eventsData = [
         date: '2021-10-29',
         displayDate: '2021.10.29',
         location: '용산구',
-        image: 'img/event/jenna/20211029_halloween.JPG',
+        image: 'img/event/jenna/20211029_halloween.png',
         alt: 'Halloween Party',
         capacity: { current: 8, total: 8 },
         status: 'Sold Out',
