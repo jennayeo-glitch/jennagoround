@@ -316,12 +316,23 @@
             // Render schedule section
             const scheduleSection = document.getElementById('event-detail-schedule');
             if (scheduleSection) {
-                // 참가비 섹션: fee가 있으면 표시, 없으면 표시하지 않음
-                const feeSection = event.fee ? `
+                // 준비물 또는 참가비 섹션
+                let feeOrPreparationSection = '';
+                if (event.preparation) {
+                    // 준비물이 있으면 준비물로 표시
+                    feeOrPreparationSection = `
+                            <div class="schedule-item">
+                                <span class="schedule-label">준비물</span>
+                                <span class="schedule-value">${event.preparation}</span>
+                            </div>`;
+                } else if (event.fee) {
+                    // 참가비가 있으면 참가비로 표시
+                    feeOrPreparationSection = `
                             <div class="schedule-item">
                                 <span class="schedule-label">참가비</span>
                                 <span class="schedule-value">${event.fee}</span>
-                            </div>` : '';
+                            </div>`;
+                }
                 
                 scheduleSection.innerHTML = `
                     <div class="schedule-content">
@@ -339,7 +350,7 @@
                                 <span class="schedule-label">모집인원</span>
                                 <span class="schedule-value">${event.capacity.current} / ${event.capacity.total}명</span>
                             </div>
-                            ${feeSection}
+                            ${feeOrPreparationSection}
                         </div>
                         <div id="participants-section" class="participants-section"></div>
                     </div>

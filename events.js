@@ -12,7 +12,7 @@ const eventsData = [
         capacity: { current: 0, total: 8 },
         status: 'Available',
         category: 'private party',
-        fee: '엔빵'
+        preparation: '사랑과 지갑'
     },
     {
         id: 2,

@@ -7,11 +7,12 @@ const eventsData = [
         location: '강남구',
         image: 'img/event/jenna/260221_bdayparty.png',
         alt: 'Birthday Party',
-        title: '여정\'s 생월파티',
+        title: '여졍\'s 생월파티',
         description: '앗!녕 여러분♥︎\n여졍\'s 생월파티? 걱정말아요\n요즘 도파민디톡스 시작했어요\n조용하게 우리끼리 맛있는거 먹고 놀거에요\n이젠 우리 건강 생각해서 막차타고 집에가요\n장소는 정해지면 알려줄게요♥︎',
         capacity: { current: 0, total: 8 },
         status: 'Available',
-        category: 'private party'
+        category: 'private party',
+        preparation: '사랑과 지갑'
     },
     {
         id: 2,
