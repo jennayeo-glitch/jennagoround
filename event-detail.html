@@ -240,7 +240,7 @@
                 <a href="index.html" class="nav-link">마이페이지</a>
                 <a href="index.html" class="nav-link">문의하기</a>
                 <div class="auth-section">
-                    <button id="kakao-login-btn" class="nav-link kakao-login-btn">카카오 로그인</button>
+                    <button id="kakao-login-btn" class="nav-link kakao-login-btn">kakao login</button>
                     <div id="user-info" class="user-info" style="display: none;">
                         <span id="user-name" class="user-name"></span>
                         <button id="logout-btn" class="nav-link logout-btn">로그아웃</button>
@@ -269,6 +269,10 @@
         </div>
     </main>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="firebase.js"></script>
     <script src="events.js"></script>
     <script src="auth.js"></script>
     <script>
@@ -358,7 +362,7 @@
         }
 
         // Participate button functionality
-        function initializeParticipateButton(event) {
+        async function initializeParticipateButton(event) {
             const participateBtn = document.getElementById('participate-btn');
             if (!participateBtn) return;
 
@@ -366,24 +370,13 @@
             const userInfo = localStorage.getItem('kakao_user');
             const isLoggedIn = !!userInfo;
 
-            // Get participants list
-            const participantsKey = `event_participants_${event.id}`;
-            let participants = JSON.parse(localStorage.getItem(participantsKey) || '[]');
-            
-            // Remove duplicates based on user id
-            const uniqueParticipants = [];
-            const seenIds = new Set();
-            participants.forEach(participant => {
-                if (!seenIds.has(participant.id)) {
-                    seenIds.add(participant.id);
-                    uniqueParticipants.push(participant);
-                }
-            });
-            
-            // Update localStorage with deduplicated list
-            if (uniqueParticipants.length !== participants.length) {
-                localStorage.setItem(participantsKey, JSON.stringify(uniqueParticipants));
-                participants = uniqueParticipants;
+            // Load participants from Firestore (with localStorage fallback)
+            let participants = [];
+            try {
+                participants = await EventParticipants.getParticipants(event.id);
+            } catch (error) {
+                console.error('Error loading participants:', error);
+                participants = [];
             }
             
             // Check if current user is in participants list
@@ -391,26 +384,10 @@
             if (isLoggedIn) {
                 const user = JSON.parse(userInfo);
                 isParticipated = participants.some(p => p.id === user.id);
-                
-                // Sync participation status with participants list
-                const participationKey = `event_participation_${event.id}`;
-                if (isParticipated) {
-                    localStorage.setItem(participationKey, 'true');
-                } else {
-                    localStorage.removeItem(participationKey);
-                }
-            } else {
-                // If logged out, clear participation status
-                const participationKey = `event_participation_${event.id}`;
-                localStorage.removeItem(participationKey);
             }
             
             // Calculate displayed capacity based on actual unique participants
             const displayedCurrent = event.capacity.current + participants.length;
-            
-            // Sync count with actual participants
-            const countKey = `event_participation_count_${event.id}`;
-            localStorage.setItem(countKey, participants.length.toString());
             
             // Update capacity display
             updateCapacityDisplay(displayedCurrent, event.capacity.total);
@@ -433,10 +410,41 @@
             }
 
             // Render participants on load
-            renderParticipants(event);
+            renderParticipants(event, participants);
+
+            // Subscribe to real-time updates
+            const unsubscribe = EventParticipants.subscribeToParticipants(event.id, (updatedParticipants) => {
+                participants = updatedParticipants;
+                const user = isLoggedIn ? JSON.parse(userInfo) : null;
+                const newIsParticipated = user ? participants.some(p => p.id === user.id) : false;
+                const newCurrent = event.capacity.current + participants.length;
+                
+                updateCapacityDisplay(newCurrent, event.capacity.total);
+                renderParticipants(event, participants);
+                
+                if (newIsParticipated && isLoggedIn) {
+                    participateBtn.textContent = '참여 취소';
+                    participateBtn.classList.add('participated');
+                } else {
+                    participateBtn.textContent = '참여하기';
+                    participateBtn.classList.remove('participated');
+                }
+                
+                if (newCurrent >= event.capacity.total && !newIsParticipated) {
+                    participateBtn.disabled = true;
+                    participateBtn.textContent = '모집 마감';
+                } else {
+                    participateBtn.disabled = false;
+                }
+                
+                // Trigger custom event to update main page
+                window.dispatchEvent(new CustomEvent('eventParticipationChanged', {
+                    detail: { eventId: event.id }
+                }));
+            });
 
             // Add click event
-            participateBtn.addEventListener('click', function() {
+            participateBtn.addEventListener('click', async function() {
                 // Get current user info
                 const userInfo = localStorage.getItem('kakao_user');
                 if (!userInfo) {
@@ -445,87 +453,38 @@
                 }
                 const user = JSON.parse(userInfo);
                 
-                // Get current participants
-                const participantsKey = `event_participants_${event.id}`;
-                let participants = JSON.parse(localStorage.getItem(participantsKey) || '[]');
+                // Disable button during operation
+                participateBtn.disabled = true;
                 
-                // Check if user is already in participants (prevent duplicate)
-                const isAlreadyParticipated = participants.some(p => p.id === user.id);
-                
-                if (isAlreadyParticipated) {
-                    // Cancel participation
-                    participants = participants.filter(p => p.id !== user.id);
-                    localStorage.setItem(participantsKey, JSON.stringify(participants));
+                try {
+                    // Get current participants
+                    let participants = await EventParticipants.getParticipants(event.id);
                     
-                    const participationKey = `event_participation_${event.id}`;
-                    localStorage.removeItem(participationKey);
+                    // Check if user is already in participants
+                    const isAlreadyParticipated = participants.some(p => p.id === user.id);
                     
-                    // Update count based on actual participants
-                    const countKey = `event_participation_count_${event.id}`;
-                    localStorage.setItem(countKey, participants.length.toString());
-                    
-                    // Update UI
-                    participateBtn.textContent = '참여하기';
-                    participateBtn.classList.remove('participated');
-                    
-                    // Update capacity display
-                    const newCurrent = event.capacity.current + participants.length;
-                    updateCapacityDisplay(newCurrent, event.capacity.total);
-                    
-                    // Update participants display
-                    renderParticipants(event);
-                    
-                    // Enable button if not full
-                    if (newCurrent < event.capacity.total) {
-                        participateBtn.disabled = false;
+                    if (isAlreadyParticipated) {
+                        // Cancel participation
+                        await EventParticipants.removeParticipant(event.id, user.id);
+                        // Real-time subscription will update UI automatically
+                    } else {
+                        // Check capacity before participating
+                        const newCurrent = event.capacity.current + participants.length;
+                        
+                        if (newCurrent >= event.capacity.total) {
+                            alert('모집 인원이 마감되었습니다.');
+                            participateBtn.disabled = false;
+                            return;
+                        }
+                        
+                        // Add user to participants
+                        await EventParticipants.addParticipant(event.id, user);
+                        // Real-time subscription will update UI automatically
                     }
-                    
-                    // Trigger custom event to update main page
-                    window.dispatchEvent(new CustomEvent('eventParticipationChanged', {
-                        detail: { eventId: event.id }
-                    }));
-                } else {
-                    // Check capacity before participating
-                    const newCurrent = event.capacity.current + participants.length;
-                    
-                    if (newCurrent >= event.capacity.total) {
-                        alert('모집 인원이 마감되었습니다.');
-                        return;
-                    }
-                    
-                    // Add user to participants
-                    const participant = {
-                        id: user.id,
-                        nickname: user.nickname,
-                        profile_image: user.profile_image || ''
-                    };
-                    participants.push(participant);
-                    localStorage.setItem(participantsKey, JSON.stringify(participants));
-                    
-                    // Update participation status
-                    const participationKey = `event_participation_${event.id}`;
-                    localStorage.setItem(participationKey, 'true');
-                    
-                    // Update count based on actual participants
-                    const countKey = `event_participation_count_${event.id}`;
-                    localStorage.setItem(countKey, participants.length.toString());
-                    
-                    // Update UI
-                    participateBtn.textContent = '참여 취소';
-                    participateBtn.classList.add('participated');
+                } catch (error) {
+                    console.error('Error updating participation:', error);
+                    alert(error.message || '참여 처리 중 오류가 발생했습니다.');
                     participateBtn.disabled = false;
-                    
-                    // Update capacity display
-                    const updatedCurrent = event.capacity.current + participants.length;
-                    updateCapacityDisplay(updatedCurrent, event.capacity.total);
-                    
-                    // Update participants display
-                    renderParticipants(event);
-                    
-                    // Trigger custom event to update main page
-                    window.dispatchEvent(new CustomEvent('eventParticipationChanged', {
-                        detail: { eventId: event.id }
-                    }));
                 }
             });
         }
@@ -541,24 +500,18 @@
             });
         }
 
-        function renderParticipants(event) {
-            const participantsKey = `event_participants_${event.id}`;
-            let participants = JSON.parse(localStorage.getItem(participantsKey) || '[]');
-            
-            // Remove duplicates based on user id
-            const uniqueParticipants = [];
-            const seenIds = new Set();
-            participants.forEach(participant => {
-                if (!seenIds.has(participant.id)) {
-                    seenIds.add(participant.id);
-                    uniqueParticipants.push(participant);
-                }
-            });
-            
-            // Update localStorage with deduplicated list
-            if (uniqueParticipants.length !== participants.length) {
-                localStorage.setItem(participantsKey, JSON.stringify(uniqueParticipants));
-                participants = uniqueParticipants;
+        function renderParticipants(event, participants = null) {
+            // If participants not provided, try to get from Firestore (async)
+            if (participants === null) {
+                EventParticipants.getParticipants(event.id).then(participantsList => {
+                    renderParticipants(event, participantsList);
+                }).catch(() => {
+                    // Fallback to localStorage
+                    const participantsKey = `event_participants_${event.id}`;
+                    const localParticipants = JSON.parse(localStorage.getItem(participantsKey) || '[]');
+                    renderParticipants(event, localParticipants);
+                });
+                return;
             }
             
             // Find participants section

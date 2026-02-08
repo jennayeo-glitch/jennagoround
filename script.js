@@ -227,16 +227,24 @@ function updateOverlayHeight(card, img) {
 }
 
 // Update event capacity on storage change
-function updateEventCapacity(eventId) {
+async function updateEventCapacity(eventId) {
     const eventCard = document.querySelector(`[data-event-id="${eventId}"]`);
     if (!eventCard) return;
     
     const event = eventsData.find(e => e.id === eventId);
     if (!event) return;
     
-    // Get actual participation count from localStorage
-    const participantsKey = `event_participants_${eventId}`;
-    const participants = JSON.parse(localStorage.getItem(participantsKey) || '[]');
+    // Get actual participation count from Firestore (with localStorage fallback)
+    let participants = [];
+    try {
+        participants = await EventParticipants.getParticipants(eventId);
+    } catch (error) {
+        console.error('Error loading participants for capacity update:', error);
+        // Fallback to localStorage
+        const participantsKey = `event_participants_${eventId}`;
+        participants = JSON.parse(localStorage.getItem(participantsKey) || '[]');
+    }
+    
     const actualCurrent = event.capacity.current + participants.length;
     
     // Determine status based on actual capacity
@@ -264,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Render events on page load
     renderEvents();
     
-    // Listen for storage events to update event cards
+    // Listen for storage events to update event cards (localStorage fallback)
     window.addEventListener('storage', function() {
         // Update all event cards when storage changes
         eventsData.forEach(event => {
@@ -282,6 +290,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update event capacities when page gains focus (user returns from detail page)
     window.addEventListener('focus', function() {
         eventsData.forEach(event => {
+            updateEventCapacity(event.id);
+        });
+    });
+    
+    // Subscribe to real-time updates for all events
+    eventsData.forEach(event => {
+        EventParticipants.subscribeToParticipants(event.id, () => {
             updateEventCapacity(event.id);
         });
     });
