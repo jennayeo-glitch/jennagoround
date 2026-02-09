@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-    <title>이벤트 상세 - jennagoround</title>
-    <meta property="og:title" content="이벤트 상세 - jennagoround">
+    <title>이벤트 상세 - 해피여졍</title>
+    <meta property="og:title" content="이벤트 상세 - 해피여졍">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jennayeo-glitch.github.io/jennagoround/event-detail.html">
-    <meta property="og:description" content="jennagoround 이벤트 상세 페이지">
+    <meta property="og:description" content="해피여졍 이벤트 상세 페이지">
     <link rel="stylesheet" href="styles.css">
     <style>
         .event-detail-container {
@@ -290,12 +290,12 @@
         // Update page title dynamically
         if (event) {
             const eventTitle = event.title || event.alt;
-            document.title = `${eventTitle} - jennagoround`;
+            document.title = `${eventTitle} - 해피여졍`;
             
             // Update Open Graph meta tags
             const ogTitle = document.querySelector('meta[property="og:title"]');
             const ogDescription = document.querySelector('meta[property="og:description"]');
-            if (ogTitle) ogTitle.setAttribute('content', `${eventTitle} - jennagoround`);
+            if (ogTitle) ogTitle.setAttribute('content', `${eventTitle} - 해피여졍`);
             if (ogDescription) ogDescription.setAttribute('content', event.description || `${eventTitle} 이벤트 상세 정보`);
         }
 
