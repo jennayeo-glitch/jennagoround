@@ -48,6 +48,17 @@ const eventsData = [
         category: 'private party'
     },
     {
+        id: 8,
+        date: '2025-10-21',
+        displayDate: '2025.10.21',
+        location: '용산구',
+        image: 'img/event/chaejae/251021_jaespecialnight.png',
+        alt: 'Jae Special Night',
+        capacity: { current: 60, total: 60 },
+        status: 'Sold Out',
+        category: 'private party'
+    },
+    {
         id: 6,
         date: '2024-11-01',
         displayDate: '2024.11.01',
