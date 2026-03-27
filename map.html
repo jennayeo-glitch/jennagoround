@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모임 지도 — jennagoround</title>
+    <meta property="og:title" content="모임 지도 — jennagoround">
+    <meta property="og:description" content="서울에서 열리는 네트워킹, 게더링, 소모임을 지도에서 확인해 보세요.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        .map-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .map-page-head {
+            margin-bottom: 24px;
+        }
+
+        .map-page-head h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .map-page-head p {
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.5;
+        }
+
+        .map-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .map-filter-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            background: var(--bg-white);
+            color: var(--text-gray);
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            font-family: inherit;
+        }
+
+        .map-filter-btn:hover {
+            border-color: var(--text-dark);
+            color: var(--text-dark);
+        }
+
+        .map-filter-btn.active {
+            background: var(--text-dark);
+            color: var(--bg-white);
+            border-color: var(--text-dark);
+        }
+
+        .map-filter-btn[data-filter="networking"].active { background: #2563eb; border-color: #2563eb; }
+        .map-filter-btn[data-filter="gathering"].active { background: #059669; border-color: #059669; }
+        .map-filter-btn[data-filter="small-group"].active { background: #d97706; border-color: #d97706; }
+
+        #map {
+            width: 100%;
+            height: min(58vh, 560px);
+            min-height: 320px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            z-index: 1;
+        }
+
+        .map-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .map-legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .map-legend i {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .map-disclaimer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--text-light-gray);
+            line-height: 1.5;
+        }
+
+        .map-marker-wrap {
+            background: transparent;
+            border: none;
+        }
+
+        .map-marker-dot {
+            display: block;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,.35);
+        }
+
+        .map-popup-inner {
+            padding: 4px 2px;
+            min-width: 180px;
+        }
+
+        .map-popup-type {
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .map-popup-title {
+            font-size: 14px;
+            display: block;
+            margin-bottom: 6px;
+            line-height: 1.35;
+        }
+
+        .map-popup-meta {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 10px;
+        }
+
+        .map-popup-link {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .map-popup-muted {
+            font-size: 12px;
+            color: var(--text-light-gray);
+        }
+
+        @media (max-width: 768px) {
+            .map-page {
+                padding: 28px 16px 60px;
+            }
+            .map-filters {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 6px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .map-filter-btn {
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; display: flex; align-items: center;">
+                    <img src="img/logo/jennagoround_logo.png" alt="ppl person" class="logo-image">
+                </a>
+            </div>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link">서비스</a>
+                <a href="map.html" class="nav-link active">모임 지도</a>
+                <a href="index.html" class="nav-link">마이페이지</a>
+                <a href="index.html" class="nav-link">문의하기</a>
+                <div class="auth-section">
+                    <button id="kakao-login-btn" class="nav-link kakao-login-btn">kakao login</button>
+                    <div id="user-info" class="user-info" style="display: none;">
+                        <span id="user-name" class="user-name"></span>
+                        <button id="logout-btn" class="nav-link logout-btn">로그아웃</button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="map-page">
+            <div class="map-page-head">
+                <h1>이 도시에서 열리는 모임</h1>
+                <p>네트워킹 · 게더링 · 소모임을 지도에서 확인해 보세요. (현재는 서울 기준 구 단위 위치입니다.)</p>
+            </div>
+
+            <div class="map-filters" role="tablist">
+                <button type="button" class="map-filter-btn active" data-filter="all">전체</button>
+                <button type="button" class="map-filter-btn" data-filter="networking">네트워킹</button>
+                <button type="button" class="map-filter-btn" data-filter="gathering">게더링</button>
+                <button type="button" class="map-filter-btn" data-filter="small-group">소모임</button>
+            </div>
+
+            <div id="map" role="application" aria-label="지도"></div>
+
+            <div class="map-legend">
+                <span><i style="background:#2563eb"></i> 네트워킹</span>
+                <span><i style="background:#059669"></i> 게더링</span>
+                <span><i style="background:#d97706"></i> 소모임</span>
+            </div>
+
+            <p class="map-disclaimer">
+                마커는 행정구역(구)에 표시되는 대략적인 위치입니다. 정확한 장소는 각 이벤트 상세 또는 주최자 안내를 참고해 주세요.
+            </p>
+        </div>
+    </main>
+
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="firebase.js"></script>
+    <script src="events.js"></script>
+    <script src="auth.js"></script>
+    <script src="map.js"></script>
+</body>
+</html>

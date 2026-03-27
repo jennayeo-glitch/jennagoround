@@ -13,6 +13,19 @@ const firebaseConfig = {
 // Note: Firebase SDK will be loaded from CDN in HTML
 let db = null;
 
+/** 카카오 birthyear(4자리) 기준 연령대 — 참가자 통계용 */
+function participantAgeGroupFromUser(user) {
+    const by = user && user.birthyear;
+    if (!by) return '미입력';
+    const y = parseInt(String(by), 10);
+    if (isNaN(y)) return '미입력';
+    const age = new Date().getFullYear() - y;
+    if (age < 30) return '20대';
+    if (age < 40) return '30대';
+    if (age < 50) return '40대';
+    return '50대+';
+}
+
 // Initialize Firestore
 function initFirebase() {
     if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
@@ -73,11 +86,12 @@ const EventParticipants = {
                 throw new Error('이미 참여한 이벤트입니다.');
             }
 
-            // Add participant
+            // Add participant (프로필 사진 미저장 — 성별·연령대만 통계용 저장)
             participants.push({
                 id: user.id,
                 nickname: user.nickname,
-                profile_image: user.profile_image || '',
+                gender: user.gender || '',
+                ageGroup: participantAgeGroupFromUser(user),
                 timestamp: new Date().toISOString() // Use ISO string instead of serverTimestamp in array
             });
 
@@ -177,7 +191,8 @@ const EventParticipants = {
             participants.push({
                 id: user.id,
                 nickname: user.nickname,
-                profile_image: user.profile_image || '',
+                gender: user.gender || '',
+                ageGroup: participantAgeGroupFromUser(user),
                 timestamp: new Date().toISOString()
             });
             localStorage.setItem(key, JSON.stringify(participants));

@@ -38,10 +38,14 @@
             margin-top: 30px;
         }
 
+        .event-detail-content--single {
+            grid-template-columns: 1fr;
+        }
+
         .event-detail-image {
             width: 100%;
             height: auto;
-            border-radius: 8px;
+            border-radius: 0;
         }
 
 
@@ -49,9 +53,75 @@
             margin-top: 60px;
             padding-top: 40px;
             border-top: 1px solid var(--border-color);
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .tab-button {
+            padding: 15px 30px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            bottom: -2px;
+        }
+
+        .tab-button:hover {
+            color: var(--text-dark);
+        }
+
+        .tab-button.active {
+            color: var(--text-dark);
+            border-bottom-color: var(--text-dark);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content-schedule {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .schedule-info-block {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 32px 48px;
+            width: 100%;
+        }
+
+        .schedule-panel {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .schedule-panel--participants {
+            border-left: 1px solid var(--border-color);
+            padding-left: 32px;
         }
 
         .event-detail-description {
@@ -108,11 +178,57 @@
             width: 100%;
         }
 
-        .schedule-content {
+        .schedule-actions {
+            margin-top: 0;
+            padding-top: 8px;
             width: 100%;
             display: flex;
-            gap: 40px;
-            align-items: flex-start;
+            flex-direction: row;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .schedule-actions > .participate-button,
+        .schedule-actions > a.participate-button {
+            flex: 1 1 0;
+            min-width: 0;
+            text-align: center;
+            border-radius: 0;
+        }
+
+        .participate-button--secondary {
+            background-color: transparent;
+            color: var(--text-dark);
+            border: 1px solid var(--text-dark);
+        }
+
+        .participate-button--secondary:hover {
+            background-color: rgba(0, 0, 0, 0.06);
+        }
+
+        .participate-button--chat-disabled:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        a.participate-button {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .participate-button.participated .participate-label--hover {
+            display: none;
+        }
+
+        .participate-button.participated:hover .participate-label--default {
+            display: none;
+        }
+
+        .participate-button.participated:hover .participate-label--hover {
+            display: inline;
         }
 
         .event-detail-schedule h2 {
@@ -141,21 +257,16 @@
         }
 
         .participate-button {
-            margin-top: 30px;
-            padding: 15px 40px;
+            margin-top: 0;
+            padding: 12px 30px;
             background-color: var(--text-dark);
             color: var(--bg-white);
             border: none;
-            border-radius: 4px;
-            font-size: 16px;
+            border-radius: 0;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            width: 100%;
-        }
-
-        .schedule-content-wrapper {
-            flex: 1;
         }
 
         .participate-button:hover {
@@ -171,92 +282,318 @@
         }
 
         .participate-button:disabled {
-            background-color: #f44336;
+            background-color: var(--text-dark);
+            color: var(--bg-white);
             cursor: not-allowed;
+            opacity: 1;
         }
 
         .participants-section {
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
-            gap: 15px;
+            align-items: flex-start;
+            gap: 0;
+            min-height: 0;
+            width: 100%;
         }
 
-        .participants-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        .participant-item {
+        .participants-stats {
+            width: 100%;
+            max-width: none;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            position: relative;
+            gap: 18px;
         }
 
-        .participant-avatar {
-            width: 50px;
-            height: 50px;
+        .participants-stat-block {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .participants-stat-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-gray);
+            letter-spacing: -0.02em;
+        }
+
+        .participants-stat-bar {
+            display: flex;
+            height: 10px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .participants-stat-seg {
+            min-width: 0;
+            height: 100%;
+            transition: width 0.25s ease;
+        }
+
+        .participants-stat-seg--male { background: #5b8fd4; }
+        .participants-stat-seg--female { background: #d48eb8; }
+        .participants-stat-seg--g-unknown { background: #b0b0b0; }
+        .participants-stat-seg--a20 { background: #93c5fd; }
+        .participants-stat-seg--a30 { background: #6ee7b7; }
+        .participants-stat-seg--a40 { background: #fcd34d; }
+        .participants-stat-seg--a50 { background: #c4b5fd; }
+        .participants-stat-seg--a-unknown { background: #d1d5db; }
+
+        .participants-stat-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            font-size: 12px;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        .participants-stat-legend span {
+            white-space: nowrap;
+        }
+
+        .participants-empty {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-light-gray);
+        }
+
+        /* Reviews Section */
+        .reviews-section {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .reviews-section h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--text-dark);
+        }
+
+        .review-form {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+
+        .review-form h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .review-anonymity-option {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .review-anonymity-option label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .review-anonymity-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--text-dark);
+        }
+
+        .review-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .review-textarea:focus {
+            outline: none;
+            border-color: var(--text-dark);
+        }
+
+        .review-submit-btn {
+            padding: 12px 30px;
+            background-color: var(--text-dark);
+            color: var(--bg-white);
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .review-submit-btn:hover {
+            background-color: var(--text-gray);
+        }
+
+        .review-submit-btn:disabled {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
+        }
+
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .review-item {
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-white);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .reviewer-avatar {
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--border-color);
-            cursor: pointer;
-            transition: transform 0.2s;
         }
 
-        .participant-avatar:hover {
-            transform: scale(1.1);
+        .reviewer-info {
+            flex: 1;
         }
 
-        .participant-name {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
+        .reviewer-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .review-date {
             font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-            z-index: 10;
+            color: var(--text-light-gray);
         }
 
-        .participant-item:hover .participant-name {
-            opacity: 1;
+        .review-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-dark);
+            white-space: pre-wrap;
+        }
+
+        .no-reviews {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light-gray);
+            font-size: 14px;
+        }
+
+        .review-login-prompt {
+            text-align: center;
+            padding: 30px 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            color: var(--text-gray);
+            font-size: 14px;
         }
 
         @media (max-width: 768px) {
+            .event-detail-container {
+                padding: 36px 16px;
+            }
+
             .event-detail-content {
-                grid-template-columns: 1fr 1fr;
-                gap: 15px;
+                grid-template-columns: 1fr;
+                gap: 20px;
             }
 
-            .schedule-content {
-                flex-direction: column;
-                gap: 30px;
+            .event-detail-content--single {
+                grid-template-columns: 1fr;
             }
 
-            .participants-section {
-                align-items: flex-start;
-            }
-
-            .participants-grid {
-                justify-content: flex-start;
-            }
-            
             .event-detail-image {
                 width: 100%;
+            }
+
+            .event-detail-description p {
+                font-size: 14px;
+                line-height: 1.5;
+            }
+
+            .description-more-btn {
+                font-size: 13px;
+            }
+
+            .schedule-label {
+                font-size: 13px;
+                min-width: 80px;
+            }
+
+            .schedule-value {
+                font-size: 14px;
+            }
+
+            .participate-button {
+                font-size: 13px;
+                padding: 10px 16px;
+            }
+
+            .participants-stat-label {
+                font-size: 12px;
+            }
+
+            .participants-stat-legend {
+                font-size: 11px;
+            }
+
+            .review-textarea {
+                font-size: 14px;
+            }
+
+            .review-content {
+                font-size: 14px;
             }
 
             .event-detail-bottom {
                 grid-template-columns: 1fr;
                 gap: 30px;
+            }
+
+            .schedule-info-block {
+                flex-direction: column;
+                gap: 28px;
+            }
+
+            .schedule-panel--participants {
+                border-left: none;
+                padding-left: 0;
+                border-top: 1px solid var(--border-color);
+                padding-top: 24px;
+            }
+
+            .tab-button {
+                padding: 12px 20px;
+                font-size: 14px;
             }
         }
     </style>
@@ -271,6 +608,7 @@
             </div>
             <nav class="header-nav">
                 <a href="index.html" class="nav-link">서비스</a>
+                <a href="map.html" class="nav-link">모임 지도</a>
                 <a href="index.html" class="nav-link">마이페이지</a>
                 <a href="index.html" class="nav-link">문의하기</a>
                 <div class="auth-section">
@@ -286,9 +624,7 @@
 
     <main class="main">
         <div class="event-detail-container">
-            <a href="index.html" class="back-button">
-                ← 목록으로 돌아가기
-            </a>
+            <a href="index.html" class="back-button" title="목록으로" aria-label="목록으로">←</a>
             <div id="event-detail-content" class="event-detail-content">
                 <!-- Event detail will be rendered here -->
             </div>
@@ -296,8 +632,21 @@
                 <div id="event-detail-description" class="event-detail-description">
                     <!-- Event description will be rendered here -->
                 </div>
-                <div id="event-detail-schedule" class="event-detail-schedule">
-                    <!-- Event schedule will be rendered here -->
+            </div>
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-button active" data-tab="schedule">일정 및 안내</button>
+                    <button class="tab-button" data-tab="reviews">리뷰</button>
+                </div>
+                <div id="tab-schedule" class="tab-content active">
+                    <div id="event-detail-schedule" class="event-detail-schedule">
+                        <!-- Event schedule will be rendered here -->
+                    </div>
+                </div>
+                <div id="tab-reviews" class="tab-content">
+                    <div id="reviews-section" class="reviews-section">
+                        <!-- Reviews will be rendered here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -331,23 +680,28 @@
 
         if (event) {
             const detailContent = document.getElementById('event-detail-content');
-            
-            // Use detailImage if available, otherwise use the main image
-            const secondImage = event.detailImage || event.image;
-            
-            detailContent.innerHTML = `
+            const hasSecondPoster = Boolean(event.detailImage && event.detailImage !== event.image);
+            detailContent.className = 'event-detail-content' + (hasSecondPoster ? '' : ' event-detail-content--single');
+            if (hasSecondPoster) {
+                detailContent.innerHTML = `
                 <div>
                     <img src="${event.image}" alt="${event.alt}" class="event-detail-image">
                 </div>
                 <div>
-                    <img src="${secondImage}" alt="${event.alt} - 상세" class="event-detail-image">
+                    <img src="${event.detailImage}" alt="${event.alt} - 상세" class="event-detail-image">
                 </div>
             `;
+            } else {
+                detailContent.innerHTML = `
+                <div>
+                    <img src="${event.image}" alt="${event.alt}" class="event-detail-image">
+                </div>
+            `;
+            }
 
             // Render description section
             const descriptionSection = document.getElementById('event-detail-description');
             if (descriptionSection) {
-                const eventTitle = event.title || event.alt;
                 const description = event.description || '이 이벤트에 대한 상세한 설명이 여기에 표시됩니다.';
                 
                 // 여졍's 생월파티 (id: 1)인 경우 특별 처리
@@ -357,7 +711,6 @@
                     const remainingLines = descriptionLines.slice(1);
                     
                     descriptionSection.innerHTML = `
-                        <h2>${eventTitle}</h2>
                         <p>${firstLine}</p>
                         <div class="description-more-content">
                             ${remainingLines.map(line => `<p>${line}</p>`).join('')}
@@ -368,7 +721,6 @@
                     // 다른 이벤트는 기존대로 표시
                     const descriptionLines = description.split('\n').map(line => `<p>${line}</p>`).join('');
                     descriptionSection.innerHTML = `
-                        <h2>${eventTitle}</h2>
                         ${descriptionLines}
                     `;
                 }
@@ -394,28 +746,39 @@
                                 <span class="schedule-value">${event.fee}</span>
                             </div>`;
                 }
-                
+
+                const kakaoChatUrl = (event.kakaoChatUrl || '').trim();
+                const kakaoChatBtn = kakaoChatUrl
+                    ? `<a href="${kakaoChatUrl.replace(/"/g, '&quot;')}" class="participate-button participate-button--secondary" target="_blank" rel="noopener noreferrer">톡방 입장</a>`
+                    : `<button type="button" class="participate-button participate-button--secondary participate-button--chat-disabled" disabled title="오픈채팅 링크를 넣으면 여기서 바로 열 수 있어요">톡방 입장</button>`;
+
                 scheduleSection.innerHTML = `
-                    <div class="schedule-content">
-                        <div class="schedule-content-wrapper">
-                            <h2>일정 및 안내</h2>
-                            <div class="schedule-item">
-                                <span class="schedule-label">날짜</span>
-                                <span class="schedule-value">${event.displayDate}</span>
+                    <div class="tab-content-schedule">
+                        <div class="schedule-info-block">
+                            <div class="schedule-panel schedule-panel--info">
+                                <div class="schedule-item">
+                                    <span class="schedule-label">날짜</span>
+                                    <span class="schedule-value">${event.displayDate}</span>
+                                </div>
+                                <div class="schedule-item">
+                                    <span class="schedule-label">위치</span>
+                                    <span class="schedule-value">${event.location}</span>
+                                </div>
+                                <div class="schedule-item">
+                                    <span class="schedule-label">모집인원</span>
+                                    <span class="schedule-value">${event.capacity.current} / ${event.capacity.total}명</span>
+                                </div>
+                                ${feeOrPreparationSection}
                             </div>
-                            <div class="schedule-item">
-                                <span class="schedule-label">위치</span>
-                                <span class="schedule-value">${event.location}</span>
+                            <div class="schedule-panel schedule-panel--participants">
+                                <div id="participants-section" class="participants-section"></div>
                             </div>
-                            <div class="schedule-item">
-                                <span class="schedule-label">모집인원</span>
-                                <span class="schedule-value">${event.capacity.current} / ${event.capacity.total}명</span>
-                            </div>
-                            ${feeOrPreparationSection}
                         </div>
-                        <div id="participants-section" class="participants-section"></div>
+                        <div class="schedule-actions">
+                            <button id="participate-btn" class="participate-button">참여하기</button>
+                            ${kakaoChatBtn}
+                        </div>
                     </div>
-                    <button id="participate-btn" class="participate-button">참여하기</button>
                 `;
             }
 
@@ -424,13 +787,62 @@
 
             // Initialize participate button
             initializeParticipateButton(event);
+
+            // Initialize reviews section
+            initializeReviewsSection(event);
+
+            // Initialize tabs after content is loaded
+            setTimeout(() => {
+                initializeTabs();
+            }, 100);
         } else {
             document.getElementById('event-detail-content').innerHTML = `
                 <div style="text-align: center; padding: 60px 20px;">
                     <h2>이벤트를 찾을 수 없습니다.</h2>
-                    <a href="index.html" class="back-button" style="margin-top: 20px;">목록으로 돌아가기</a>
+                    <a href="index.html" class="back-button" style="margin-top: 20px;" title="목록으로" aria-label="목록으로">←</a>
                 </div>
             `;
+        }
+
+        const PARTICIPATED_BTN_HTML = '<span class="participate-label participate-label--default">참여 확정</span><span class="participate-label participate-label--hover">참여 취소</span>';
+
+        function isParticipateMobileUi() {
+            return window.matchMedia('(max-width: 768px)').matches;
+        }
+
+        function getParticipantsForStats(event, participants) {
+            if (event.demoParticipants && event.demoParticipants.length > 0) {
+                return event.demoParticipants;
+            }
+            return participants;
+        }
+
+        function getDisplayCapacityCurrent(event, participants) {
+            if (event.demoParticipants && event.demoParticipants.length > 0) {
+                return event.capacity.total;
+            }
+            return event.capacity.current + participants.length;
+        }
+
+        function setParticipateButtonUi(participateBtn, { isLoggedIn, isParticipated, current, total }) {
+            if (current >= total && !isParticipated) {
+                participateBtn.disabled = true;
+                participateBtn.classList.remove('participated');
+                participateBtn.textContent = '마감';
+                return;
+            }
+            participateBtn.disabled = false;
+            if (isParticipated && isLoggedIn) {
+                participateBtn.classList.add('participated');
+                if (isParticipateMobileUi()) {
+                    participateBtn.textContent = '참여 취소';
+                } else {
+                    participateBtn.innerHTML = PARTICIPATED_BTN_HTML;
+                }
+            } else {
+                participateBtn.classList.remove('participated');
+                participateBtn.textContent = '참여하기';
+            }
         }
 
         // Participate button functionality
@@ -458,28 +870,18 @@
                 isParticipated = participants.some(p => p.id === user.id);
             }
             
-            // Calculate displayed capacity based on actual unique participants
-            const displayedCurrent = event.capacity.current + participants.length;
+            // Calculate displayed capacity (데모 이벤트는 항상 마감 인원으로 표시)
+            const displayedCurrent = getDisplayCapacityCurrent(event, participants);
             
             // Update capacity display
             updateCapacityDisplay(displayedCurrent, event.capacity.total);
             
-            // Set button state
-            if (isParticipated && isLoggedIn) {
-                participateBtn.textContent = '참여 취소';
-                participateBtn.classList.add('participated');
-            } else {
-                participateBtn.textContent = '참여하기';
-                participateBtn.classList.remove('participated');
-            }
-
-            // Disable button if full
-            if (displayedCurrent >= event.capacity.total && !isParticipated) {
-                participateBtn.disabled = true;
-                participateBtn.textContent = '모집 마감';
-            } else {
-                participateBtn.disabled = false;
-            }
+            setParticipateButtonUi(participateBtn, {
+                isLoggedIn,
+                isParticipated,
+                current: displayedCurrent,
+                total: event.capacity.total
+            });
 
             // Render participants on load
             renderParticipants(event, participants);
@@ -489,25 +891,17 @@
                 participants = updatedParticipants;
                 const user = isLoggedIn ? JSON.parse(userInfo) : null;
                 const newIsParticipated = user ? participants.some(p => p.id === user.id) : false;
-                const newCurrent = event.capacity.current + participants.length;
+                const newCurrent = getDisplayCapacityCurrent(event, participants);
                 
                 updateCapacityDisplay(newCurrent, event.capacity.total);
                 renderParticipants(event, participants);
-                
-                if (newIsParticipated && isLoggedIn) {
-                    participateBtn.textContent = '참여 취소';
-                    participateBtn.classList.add('participated');
-                } else {
-                    participateBtn.textContent = '참여하기';
-                    participateBtn.classList.remove('participated');
-                }
-                
-                if (newCurrent >= event.capacity.total && !newIsParticipated) {
-                    participateBtn.disabled = true;
-                    participateBtn.textContent = '모집 마감';
-                } else {
-                    participateBtn.disabled = false;
-                }
+
+                setParticipateButtonUi(participateBtn, {
+                    isLoggedIn,
+                    isParticipated: newIsParticipated,
+                    current: newCurrent,
+                    total: event.capacity.total
+                });
                 
                 // Trigger custom event to update main page
                 window.dispatchEvent(new CustomEvent('eventParticipationChanged', {
@@ -518,22 +912,22 @@
             // Add click event
             participateBtn.addEventListener('click', async function() {
                 // Get current user info
-                const userInfo = localStorage.getItem('kakao_user');
-                if (!userInfo) {
+                const userInfoClick = localStorage.getItem('kakao_user');
+                if (!userInfoClick) {
                     alert('로그인이 필요합니다.');
                     return;
                 }
-                const user = JSON.parse(userInfo);
+                const user = JSON.parse(userInfoClick);
                 
                 // Disable button during operation
                 participateBtn.disabled = true;
                 
                 try {
                     // Get current participants
-                    let participants = await EventParticipants.getParticipants(event.id);
+                    let participantsList = await EventParticipants.getParticipants(event.id);
                     
                     // Check if user is already in participants
-                    const isAlreadyParticipated = participants.some(p => p.id === user.id);
+                    const isAlreadyParticipated = participantsList.some(p => p.id === user.id);
                     
                     if (isAlreadyParticipated) {
                         // Cancel participation
@@ -541,11 +935,19 @@
                         // Real-time subscription will update UI automatically
                     } else {
                         // Check capacity before participating
-                        const newCurrent = event.capacity.current + participants.length;
+                        const newCurrent = event.capacity.current + participantsList.length;
                         
                         if (newCurrent >= event.capacity.total) {
-                            alert('모집 인원이 마감되었습니다.');
-                            participateBtn.disabled = false;
+                            alert('마감되었습니다.');
+                            const p = await EventParticipants.getParticipants(event.id);
+                            const cur = getDisplayCapacityCurrent(event, p);
+                            const participated = p.some(x => x.id === user.id);
+                            setParticipateButtonUi(participateBtn, {
+                                isLoggedIn: true,
+                                isParticipated: participated,
+                                current: cur,
+                                total: event.capacity.total
+                            });
                             return;
                         }
                         
@@ -556,7 +958,15 @@
                 } catch (error) {
                     console.error('Error updating participation:', error);
                     alert(error.message || '참여 처리 중 오류가 발생했습니다.');
-                    participateBtn.disabled = false;
+                    const p = await EventParticipants.getParticipants(event.id);
+                    const cur = getDisplayCapacityCurrent(event, p);
+                    const participated = p.some(x => x.id === user.id);
+                    setParticipateButtonUi(participateBtn, {
+                        isLoggedIn: true,
+                        isParticipated: participated,
+                        current: cur,
+                        total: event.capacity.total
+                    });
                 }
             });
         }
@@ -570,6 +980,70 @@
                     value.textContent = `${current} / ${total}명`;
                 }
             });
+        }
+
+        function participantStatsPct(count, total) {
+            if (!total) return 0;
+            return Math.round((count / total) * 1000) / 10;
+        }
+
+        function renderParticipantRatioBars(participants) {
+            const total = participants.length;
+            const g = { male: 0, female: 0, unknown: 0 };
+            const ageOrder = [
+                { key: '20대', cls: 'participants-stat-seg--a20' },
+                { key: '30대', cls: 'participants-stat-seg--a30' },
+                { key: '40대', cls: 'participants-stat-seg--a40' },
+                { key: '50대+', cls: 'participants-stat-seg--a50' },
+                { key: '미입력', cls: 'participants-stat-seg--a-unknown' }
+            ];
+            const a = { '20대': 0, '30대': 0, '40대': 0, '50대+': 0, '미입력': 0 };
+
+            participants.forEach((p) => {
+                if (p.gender === 'female') g.female++;
+                else if (p.gender === 'male') g.male++;
+                else g.unknown++;
+                const ag = p.ageGroup && Object.prototype.hasOwnProperty.call(a, p.ageGroup) ? p.ageGroup : '미입력';
+                a[ag]++;
+            });
+
+            const gSegments = [
+                { count: g.male, cls: 'participants-stat-seg--male', label: '남' },
+                { count: g.female, cls: 'participants-stat-seg--female', label: '여' },
+                { count: g.unknown, cls: 'participants-stat-seg--g-unknown', label: '미입력' }
+            ];
+            const gBar = gSegments
+                .filter((s) => s.count > 0)
+                .map((s) => `<div class="participants-stat-seg ${s.cls}" style="width:${participantStatsPct(s.count, total)}%" title="${s.label} ${s.count}명"></div>`)
+                .join('');
+            const gLegend = gSegments
+                .filter((s) => s.count > 0)
+                .map((s) => `<span>${s.label} ${s.count}명 (${participantStatsPct(s.count, total)}%)</span>`)
+                .join('');
+
+            const aBar = ageOrder
+                .filter((row) => a[row.key] > 0)
+                .map((row) => `<div class="participants-stat-seg ${row.cls}" style="width:${participantStatsPct(a[row.key], total)}%" title="${row.key} ${a[row.key]}명"></div>`)
+                .join('');
+            const aLegend = ageOrder
+                .filter((row) => a[row.key] > 0)
+                .map((row) => `<span>${row.key} ${a[row.key]}명 (${participantStatsPct(a[row.key], total)}%)</span>`)
+                .join('');
+
+            return `
+                <div class="participants-stats">
+                    <div class="participants-stat-block">
+                        <div class="participants-stat-label">성별</div>
+                        <div class="participants-stat-bar">${gBar || `<div class="participants-stat-seg participants-stat-seg--g-unknown" style="width:100%"></div>`}</div>
+                        <div class="participants-stat-legend">${gLegend}</div>
+                    </div>
+                    <div class="participants-stat-block">
+                        <div class="participants-stat-label">연령대</div>
+                        <div class="participants-stat-bar">${aBar || `<div class="participants-stat-seg participants-stat-seg--a-unknown" style="width:100%"></div>`}</div>
+                        <div class="participants-stat-legend">${aLegend}</div>
+                    </div>
+                </div>
+            `;
         }
 
         function renderParticipants(event, participants = null) {
@@ -590,26 +1064,14 @@
             const participantsSection = document.getElementById('participants-section');
             if (!participantsSection) return;
 
-            if (participants.length === 0) {
-                participantsSection.innerHTML = '';
+            const listForStats = getParticipantsForStats(event, participants);
+
+            if (listForStats.length === 0) {
+                participantsSection.innerHTML = '<p class="participants-empty">아직 참가한 사람이 없어요.</p>';
                 return;
             }
 
-            const participantsHTML = participants.map(participant => `
-                <div class="participant-item">
-                    <img src="${participant.profile_image || 'https://via.placeholder.com/50'}" 
-                         alt="${participant.nickname}" 
-                         class="participant-avatar"
-                         onerror="this.src='https://via.placeholder.com/50'">
-                    <span class="participant-name">${participant.nickname}</span>
-                </div>
-            `).join('');
-
-            participantsSection.innerHTML = `
-                <div class="participants-grid">
-                    ${participantsHTML}
-                </div>
-            `;
+            participantsSection.innerHTML = renderParticipantRatioBars(listForStats);
         }
 
         // 더보기 버튼 토글 함수
@@ -626,6 +1088,279 @@
                     moreBtn.textContent = '접기';
                 }
             }
+        }
+
+        // Reviews Section Functions
+        async function initializeReviewsSection(event) {
+            const reviewsSection = document.getElementById('reviews-section');
+            if (!reviewsSection) return;
+
+            // Check if user is logged in
+            const userInfo = localStorage.getItem('kakao_user');
+            const isLoggedIn = !!userInfo;
+            const user = isLoggedIn ? JSON.parse(userInfo) : null;
+
+            // Check if user is a participant
+            let participants = [];
+            try {
+                participants = await EventParticipants.getParticipants(event.id);
+            } catch (error) {
+                console.error('Error loading participants:', error);
+            }
+
+            const isParticipant = user ? participants.some(p => p.id === user.id) : false;
+
+            // Load existing reviews
+            let reviews = [];
+            try {
+                reviews = await EventReviews.getReviews(event.id);
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+
+            // Find user's existing review
+            const userReview = user ? reviews.find(r => r.userId === user.id) : null;
+
+            // Render reviews section
+            renderReviewsSection(event, reviews, isLoggedIn, isParticipant, userReview, user);
+
+            // Subscribe to real-time updates
+            const unsubscribe = EventReviews.subscribeToReviews(event.id, (updatedReviews) => {
+                const updatedUserReview = user ? updatedReviews.find(r => r.userId === user.id) : null;
+                renderReviewsSection(event, updatedReviews, isLoggedIn, isParticipant, updatedUserReview, user);
+            });
+        }
+
+        function renderReviewsSection(event, reviews, isLoggedIn, isParticipant, userReview, user) {
+            const reviewsSection = document.getElementById('reviews-section');
+            if (!reviewsSection) return;
+
+            // Sort reviews by timestamp (newest first)
+            const sortedReviews = [...reviews].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+
+            let reviewsHTML = '';
+
+            // Review form (only for logged-in participants) - shown first
+            if (isLoggedIn && isParticipant) {
+                const currentComment = userReview ? userReview.comment : '';
+                const isAnonymous = userReview ? userReview.isAnonymous : false;
+                
+                reviewsHTML += `
+                    <div class="review-form">
+                        <form id="review-form">
+                            <div class="review-anonymity-option">
+                                <label>
+                                    <input type="radio" name="anonymity" value="real" ${!isAnonymous ? 'checked' : ''}>
+                                    본인 이름으로
+                                </label>
+                                <label>
+                                    <input type="radio" name="anonymity" value="anonymous" ${isAnonymous ? 'checked' : ''}>
+                                    익명으로
+                                </label>
+                            </div>
+                            <textarea 
+                                id="review-comment" 
+                                class="review-textarea" 
+                                placeholder="이벤트에 대한 리뷰를 작성해주세요..."
+                                required>${currentComment}</textarea>
+                            <button type="submit" class="review-submit-btn">${userReview ? '리뷰 수정' : '리뷰 등록'}</button>
+                        </form>
+                    </div>
+                `;
+            } else if (!isLoggedIn) {
+                reviewsHTML += `
+                    <div class="review-login-prompt">
+                        리뷰를 작성하려면 로그인하고 이벤트에 참여해주세요.
+                    </div>
+                `;
+            } else if (!isParticipant) {
+                reviewsHTML += `
+                    <div class="review-login-prompt">
+                        이벤트에 참여한 후 리뷰를 작성할 수 있습니다.
+                    </div>
+                `;
+            }
+
+            // Reviews list - shown below the form
+            reviewsHTML += '<div style="margin-top: 40px;">';
+            
+            if (sortedReviews.length === 0) {
+                reviewsHTML += '<div class="no-reviews">아직 작성된 리뷰가 없습니다.</div>';
+            } else {
+                reviewsHTML += '<div class="reviews-list">';
+                sortedReviews.forEach(review => {
+                    const reviewDate = new Date(review.timestamp);
+                    const formattedDate = `${reviewDate.getFullYear()}.${String(reviewDate.getMonth() + 1).padStart(2, '0')}.${String(reviewDate.getDate()).padStart(2, '0')}`;
+                    const isAnonymous = review.isAnonymous || false;
+                    const displayNickname = review.nickname || '익명';
+
+                    reviewsHTML += `
+                        <div class="review-item">
+                            <div class="review-header">
+                                ${!isAnonymous ? `
+                                <img src="${review.profile_image || 'https://via.placeholder.com/45'}" 
+                                     alt="${displayNickname}" 
+                                     class="reviewer-avatar"
+                                     onerror="this.src='https://via.placeholder.com/45'">
+                                ` : `
+                                <div class="reviewer-avatar" style="background-color: #e0e0e0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 20px;">👤</div>
+                                `}
+                                <div class="reviewer-info">
+                                    <div class="reviewer-name">${displayNickname}</div>
+                                    <div class="review-date">${formattedDate}</div>
+                                </div>
+                            </div>
+                            <div class="review-content">${review.comment}</div>
+                        </div>
+                    `;
+                });
+                reviewsHTML += '</div>';
+            }
+            reviewsHTML += '</div>';
+
+            reviewsSection.innerHTML = reviewsHTML;
+
+            // Re-attach event listener for review form after rendering
+            if (isLoggedIn && isParticipant && user) {
+                const reviewForm = document.getElementById('review-form');
+                if (reviewForm) {
+                    // Remove existing listeners by cloning the form
+                    const newForm = reviewForm.cloneNode(true);
+                    reviewForm.parentNode.replaceChild(newForm, reviewForm);
+                    
+                    // Add event listener to the new form
+                    newForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        await handleReviewSubmit(event, user);
+                    });
+                }
+            }
+        }
+
+        // Generate cute random nickname for anonymous reviews
+        function generateRandomNickname() {
+            const adjectives = [
+                '귀여운', '달콤한', '행복한', '즐거운', '사랑스러운', '멋진', '예쁜', '깜찍한',
+                '상냥한', '밝은', '따뜻한', '신나는', '활발한', '친근한', '부드러운', '따스한',
+                '화사한', '산뜻한', '포근한', '향기로운', '반짝이는', '신비로운', '아늑한', '편안한'
+            ];
+            const nouns = [
+                '강아지', '고양이', '토끼', '곰돌이', '펭귄', '다람쥐', '햄스터', '판다',
+                '여우', '사슴', '펭귄', '오리', '참새', '비둘기', '나비', '벌',
+                '별', '달', '구름', '꽃', '나무', '잎', '열매', '씨앗',
+                '버블', '하트', '별똥별', '무지개', '햇살', '달빛', '별빛', '이슬'
+            ];
+            
+            const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+            const randomNumber = Math.floor(Math.random() * 1000);
+            
+            return `${randomAdjective}${randomNoun}${randomNumber}`;
+        }
+
+        async function handleReviewSubmit(event, user) {
+            const commentInput = document.getElementById('review-comment');
+            const anonymityInput = document.querySelector('input[name="anonymity"]:checked');
+            const submitBtn = document.querySelector('.review-submit-btn');
+
+            if (!commentInput || !commentInput.value.trim()) {
+                alert('리뷰 내용을 입력해주세요.');
+                return;
+            }
+
+            if (!anonymityInput) {
+                alert('이름 표시 방식을 선택해주세요.');
+                return;
+            }
+
+            const comment = commentInput.value.trim();
+            const isAnonymous = anonymityInput.value === 'anonymous';
+
+            // Disable button during submission
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '처리 중...';
+            }
+
+            try {
+                // Check if user already has a review
+                const existingReviews = await EventReviews.getReviews(event.id);
+                const existingReview = existingReviews.find(r => r.userId === user.id);
+                const isUpdate = !!existingReview;
+
+                // Determine display nickname
+                let finalNickname = user.nickname;
+                if (isAnonymous) {
+                    if (isUpdate && existingReview.isAnonymous) {
+                        // Keep the same anonymous nickname if still anonymous
+                        finalNickname = existingReview.nickname;
+                    } else {
+                        // Generate new random nickname for new anonymous review or when changing to anonymous
+                        finalNickname = generateRandomNickname();
+                    }
+                }
+
+                await EventReviews.addReview(event.id, user, comment, isAnonymous, finalNickname);
+                
+                // Clear form only if it's a new review
+                if (!isUpdate) {
+                    commentInput.value = '';
+                }
+                
+                alert(isUpdate ? '리뷰가 수정되었습니다.' : '리뷰가 등록되었습니다.');
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                alert(error.message || '리뷰 등록 중 오류가 발생했습니다.');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    // The button text will be updated when reviews are re-rendered
+                }
+            }
+        }
+
+        // Tab functionality
+        function initializeTabs() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            if (tabButtons.length === 0 || tabContents.length === 0) {
+                console.warn('Tabs not found');
+                return;
+            }
+
+            tabButtons.forEach(button => {
+                // Remove existing listeners by cloning
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+                
+                newButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetTab = newButton.getAttribute('data-tab');
+
+                    // Remove active class from all buttons and contents
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked button and corresponding content
+                    newButton.classList.add('active');
+                    const targetContent = document.getElementById(`tab-${targetTab}`);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Initialize tabs when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(initializeTabs, 100);
+            });
+        } else {
+            setTimeout(initializeTabs, 100);
         }
     </script>
 </body>

@@ -62,6 +62,8 @@ function loginWithKakao() {
                     let nickname = '사용자';
                     let profileImage = '';
                     let email = '';
+                    let gender = '';
+                    let birthyear = '';
                     
                     // 닉네임 가져오기 - 여러 경로 시도
                     if (res.kakao_account && res.kakao_account.profile) {
@@ -79,12 +81,22 @@ function loginWithKakao() {
                     if (res.kakao_account && res.kakao_account.email) {
                         email = res.kakao_account.email;
                     }
+
+                    if (res.kakao_account && res.kakao_account.gender) {
+                        gender = res.kakao_account.gender;
+                    }
+
+                    if (res.kakao_account && res.kakao_account.birthyear) {
+                        birthyear = String(res.kakao_account.birthyear);
+                    }
                     
                     const user = {
                         id: res.id,
                         nickname: nickname,
                         profile_image: profileImage,
-                        email: email
+                        email: email,
+                        gender: gender,
+                        birthyear: birthyear
                     };
                     
                     console.log('=== 추출된 사용자 정보 ===');
@@ -115,7 +127,9 @@ function loginWithKakao() {
                         id: authObj.id || 'unknown',
                         nickname: '사용자',
                         profile_image: '',
-                        email: ''
+                        email: '',
+                        gender: '',
+                        birthyear: ''
                     };
                     
                     localStorage.setItem('kakao_user', JSON.stringify(user));

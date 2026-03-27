@@ -349,6 +349,10 @@ body {
 }
 
 @media (max-width: 768px) {
+    html {
+        font-size: 13px;
+    }
+
     html, body {
         overflow-x: hidden;
         position: relative;
@@ -357,8 +361,39 @@ body {
     }
     
     body {
+        font-size: 13px;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+    }
+
+    .info-value {
+        font-size: 19px;
+    }
+
+    .info-item.info-date,
+    .info-item.info-location {
+        top: 16px;
+    }
+
+    .info-item.info-date {
+        left: 16px;
+    }
+
+    .info-item.info-location {
+        right: 16px;
+    }
+
+    .info-item.info-capacity,
+    .info-item.info-status {
+        bottom: 16px;
+    }
+
+    .info-item.info-capacity {
+        left: 16px;
+    }
+
+    .info-item.info-status {
+        right: 16px;
     }
     
     .main {
@@ -443,6 +478,18 @@ body {
 }
 
 @media (max-width: 480px) {
+    html {
+        font-size: 12px;
+    }
+
+    body {
+        font-size: 12px;
+    }
+
+    .info-value {
+        font-size: 17px;
+    }
+
     .logo-image {
         height: 28px;
     }

@@ -1,3 +1,11 @@
+/** demoParticipants가 있으면 카드 인원은 events.js의 capacity만 사용 (로컬 참가 누적 이중 합산 방지) */
+function getCardCapacityCurrent(event, participants) {
+    if (event.demoParticipants && event.demoParticipants.length > 0) {
+        return event.capacity.current;
+    }
+    return event.capacity.current + participants.length;
+}
+
 // Render events
 function renderEvents(filterCategory = 'all') {
     const eventsGrid = document.getElementById('events-grid');
@@ -25,7 +33,7 @@ function renderEvents(filterCategory = 'all') {
         // Get actual participation count from localStorage
         const participantsKey = `event_participants_${event.id}`;
         const participants = JSON.parse(localStorage.getItem(participantsKey) || '[]');
-        const actualCurrent = event.capacity.current + participants.length;
+        const actualCurrent = getCardCapacityCurrent(event, participants);
         
         // Determine status based on actual capacity
         let displayStatus = event.status;
@@ -57,8 +65,7 @@ function renderEvents(filterCategory = 'all') {
 
         // Add click event to navigate to detail page
         eventCard.addEventListener('click', function() {
-            // Only allow navigation for event id 1 (여졍's 생월파티)
-            if (event.id === 1) {
+            if ([1, 9].includes(event.id)) {
                 window.location.href = `event-detail.html?id=${event.id}`;
             } else {
                 alert('상세페이지 준비중입니다.');
@@ -245,7 +252,7 @@ async function updateEventCapacity(eventId) {
         participants = JSON.parse(localStorage.getItem(participantsKey) || '[]');
     }
     
-    const actualCurrent = event.capacity.current + participants.length;
+    const actualCurrent = getCardCapacityCurrent(event, participants);
     
     // Determine status based on actual capacity
     let displayStatus = event.status;

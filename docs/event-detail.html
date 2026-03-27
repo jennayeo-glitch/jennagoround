@@ -38,10 +38,14 @@
             margin-top: 30px;
         }
 
+        .event-detail-content--single {
+            grid-template-columns: 1fr;
+        }
+
         .event-detail-image {
             width: 100%;
             height: auto;
-            border-radius: 8px;
+            border-radius: 0;
         }
 
 
@@ -111,8 +115,19 @@
         .schedule-content {
             width: 100%;
             display: flex;
-            gap: 40px;
+            flex-direction: row;
+            gap: 32px 48px;
             align-items: flex-start;
+        }
+
+        .schedule-panel {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .schedule-panel--participants {
+            border-left: 1px solid var(--border-color);
+            padding-left: 32px;
         }
 
         .event-detail-schedule h2 {
@@ -140,22 +155,68 @@
             color: var(--text-dark);
         }
 
+        .schedule-actions {
+            margin-top: 24px;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .schedule-actions > .participate-button,
+        .schedule-actions > a.participate-button {
+            flex: 1 1 0;
+            min-width: 0;
+            text-align: center;
+            border-radius: 0;
+        }
+
         .participate-button {
-            margin-top: 30px;
             padding: 15px 40px;
             background-color: var(--text-dark);
             color: var(--bg-white);
             border: none;
-            border-radius: 4px;
+            border-radius: 0;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            width: 100%;
         }
 
-        .schedule-content-wrapper {
-            flex: 1;
+        .participate-button--secondary {
+            background-color: transparent;
+            color: var(--text-dark);
+            border: 1px solid var(--text-dark);
+        }
+
+        .participate-button--secondary:hover {
+            background-color: rgba(0, 0, 0, 0.06);
+        }
+
+        .participate-button--chat-disabled:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        a.participate-button {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .participate-button.participated .participate-label--hover {
+            display: none;
+        }
+
+        .participate-button.participated:hover .participate-label--default {
+            display: none;
+        }
+
+        .participate-button.participated:hover .participate-label--hover {
+            display: inline;
         }
 
         .participate-button:hover {
@@ -171,83 +232,142 @@
         }
 
         .participate-button:disabled {
-            background-color: #f44336;
+            background-color: var(--text-dark);
+            color: var(--bg-white);
             cursor: not-allowed;
+            opacity: 1;
         }
 
         .participants-section {
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
-            gap: 15px;
+            align-items: flex-start;
+            gap: 0;
+            width: 100%;
         }
 
-        .participants-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        .participant-item {
+        .participants-stats {
+            width: 100%;
+            max-width: none;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            position: relative;
+            gap: 18px;
         }
 
-        .participant-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--border-color);
-            cursor: pointer;
-            transition: transform 0.2s;
+        .participants-stat-block {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .participant-avatar:hover {
-            transform: scale(1.1);
+        .participants-stat-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-gray);
+            letter-spacing: -0.02em;
         }
 
-        .participant-name {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
+        .participants-stat-bar {
+            display: flex;
+            height: 10px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .participants-stat-seg {
+            min-width: 0;
+            height: 100%;
+            transition: width 0.25s ease;
+        }
+
+        .participants-stat-seg--male { background: #5b8fd4; }
+        .participants-stat-seg--female { background: #d48eb8; }
+        .participants-stat-seg--g-unknown { background: #b0b0b0; }
+        .participants-stat-seg--a20 { background: #93c5fd; }
+        .participants-stat-seg--a30 { background: #6ee7b7; }
+        .participants-stat-seg--a40 { background: #fcd34d; }
+        .participants-stat-seg--a50 { background: #c4b5fd; }
+        .participants-stat-seg--a-unknown { background: #d1d5db; }
+
+        .participants-stat-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
             font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-            z-index: 10;
+            color: var(--text-gray);
+            line-height: 1.4;
         }
 
-        .participant-item:hover .participant-name {
-            opacity: 1;
+        .participants-stat-legend span {
+            white-space: nowrap;
+        }
+
+        .participants-empty {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-light-gray);
         }
 
         @media (max-width: 768px) {
+            .event-detail-container {
+                padding: 36px 16px;
+            }
+
             .event-detail-content {
-                grid-template-columns: 1fr 1fr;
-                gap: 15px;
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .event-detail-content--single {
+                grid-template-columns: 1fr;
+            }
+
+            .event-detail-description p {
+                font-size: 14px;
+                line-height: 1.5;
+            }
+
+            .description-more-btn {
+                font-size: 13px;
+            }
+
+            .schedule-label {
+                font-size: 13px;
+                min-width: 80px;
+            }
+
+            .schedule-value {
+                font-size: 14px;
+            }
+
+            .participate-button {
+                font-size: 13px;
+                padding: 10px 16px;
+            }
+
+            .participants-stat-label {
+                font-size: 12px;
+            }
+
+            .participants-stat-legend {
+                font-size: 11px;
             }
 
             .schedule-content {
                 flex-direction: column;
-                gap: 30px;
+                gap: 28px;
+            }
+
+            .schedule-panel--participants {
+                border-left: none;
+                padding-left: 0;
+                border-top: 1px solid var(--border-color);
+                padding-top: 24px;
             }
 
             .participants-section {
                 align-items: flex-start;
-            }
-
-            .participants-grid {
-                justify-content: flex-start;
             }
             
             .event-detail-image {
@@ -286,9 +406,7 @@
 
     <main class="main">
         <div class="event-detail-container">
-            <a href="index.html" class="back-button">
-                ← 목록으로 돌아가기
-            </a>
+            <a href="index.html" class="back-button" title="목록으로" aria-label="목록으로">←</a>
             <div id="event-detail-content" class="event-detail-content">
                 <!-- Event detail will be rendered here -->
             </div>
@@ -331,23 +449,28 @@
 
         if (event) {
             const detailContent = document.getElementById('event-detail-content');
-            
-            // Use detailImage if available, otherwise use the main image
-            const secondImage = event.detailImage || event.image;
-            
-            detailContent.innerHTML = `
+            const hasSecondPoster = Boolean(event.detailImage && event.detailImage !== event.image);
+            detailContent.className = 'event-detail-content' + (hasSecondPoster ? '' : ' event-detail-content--single');
+            if (hasSecondPoster) {
+                detailContent.innerHTML = `
                 <div>
                     <img src="${event.image}" alt="${event.alt}" class="event-detail-image">
                 </div>
                 <div>
-                    <img src="${secondImage}" alt="${event.alt} - 상세" class="event-detail-image">
+                    <img src="${event.detailImage}" alt="${event.alt} - 상세" class="event-detail-image">
                 </div>
             `;
+            } else {
+                detailContent.innerHTML = `
+                <div>
+                    <img src="${event.image}" alt="${event.alt}" class="event-detail-image">
+                </div>
+            `;
+            }
 
             // Render description section
             const descriptionSection = document.getElementById('event-detail-description');
             if (descriptionSection) {
-                const eventTitle = event.title || event.alt;
                 const description = event.description || '이 이벤트에 대한 상세한 설명이 여기에 표시됩니다.';
                 
                 // 여졍's 생월파티 (id: 1)인 경우 특별 처리
@@ -357,7 +480,6 @@
                     const remainingLines = descriptionLines.slice(1);
                     
                     descriptionSection.innerHTML = `
-                        <h2>${eventTitle}</h2>
                         <p>${firstLine}</p>
                         <div class="description-more-content">
                             ${remainingLines.map(line => `<p>${line}</p>`).join('')}
@@ -368,7 +490,6 @@
                     // 다른 이벤트는 기존대로 표시
                     const descriptionLines = description.split('\n').map(line => `<p>${line}</p>`).join('');
                     descriptionSection.innerHTML = `
-                        <h2>${eventTitle}</h2>
                         ${descriptionLines}
                     `;
                 }
@@ -394,11 +515,15 @@
                                 <span class="schedule-value">${event.fee}</span>
                             </div>`;
                 }
+
+                const kakaoChatUrl = (event.kakaoChatUrl || '').trim();
+                const kakaoChatBtn = kakaoChatUrl
+                    ? `<a href="${kakaoChatUrl.replace(/"/g, '&quot;')}" class="participate-button participate-button--secondary" target="_blank" rel="noopener noreferrer">톡방 입장</a>`
+                    : `<button type="button" class="participate-button participate-button--secondary participate-button--chat-disabled" disabled title="오픈채팅 링크를 넣으면 여기서 바로 열 수 있어요">톡방 입장</button>`;
                 
                 scheduleSection.innerHTML = `
                     <div class="schedule-content">
-                        <div class="schedule-content-wrapper">
-                            <h2>일정 및 안내</h2>
+                        <div class="schedule-panel schedule-panel--info">
                             <div class="schedule-item">
                                 <span class="schedule-label">날짜</span>
                                 <span class="schedule-value">${event.displayDate}</span>
@@ -413,9 +538,14 @@
                             </div>
                             ${feeOrPreparationSection}
                         </div>
-                        <div id="participants-section" class="participants-section"></div>
+                        <div class="schedule-panel schedule-panel--participants">
+                            <div id="participants-section" class="participants-section"></div>
+                        </div>
                     </div>
-                    <button id="participate-btn" class="participate-button">참여하기</button>
+                    <div class="schedule-actions">
+                        <button id="participate-btn" class="participate-button">참여하기</button>
+                        ${kakaoChatBtn}
+                    </div>
                 `;
             }
 
@@ -428,9 +558,50 @@
             document.getElementById('event-detail-content').innerHTML = `
                 <div style="text-align: center; padding: 60px 20px;">
                     <h2>이벤트를 찾을 수 없습니다.</h2>
-                    <a href="index.html" class="back-button" style="margin-top: 20px;">목록으로 돌아가기</a>
+                    <a href="index.html" class="back-button" style="margin-top: 20px;" title="목록으로" aria-label="목록으로">←</a>
                 </div>
             `;
+        }
+
+        const PARTICIPATED_BTN_HTML = '<span class="participate-label participate-label--default">참여 확정</span><span class="participate-label participate-label--hover">참여 취소</span>';
+
+        function isParticipateMobileUi() {
+            return window.matchMedia('(max-width: 768px)').matches;
+        }
+
+        function getParticipantsForStats(event, participants) {
+            if (event.demoParticipants && event.demoParticipants.length > 0) {
+                return event.demoParticipants;
+            }
+            return participants;
+        }
+
+        function getDisplayCapacityCurrent(event, participants) {
+            if (event.demoParticipants && event.demoParticipants.length > 0) {
+                return event.capacity.total;
+            }
+            return event.capacity.current + participants.length;
+        }
+
+        function setParticipateButtonUi(participateBtn, { isLoggedIn, isParticipated, current, total }) {
+            if (current >= total && !isParticipated) {
+                participateBtn.disabled = true;
+                participateBtn.classList.remove('participated');
+                participateBtn.textContent = '마감';
+                return;
+            }
+            participateBtn.disabled = false;
+            if (isParticipated && isLoggedIn) {
+                participateBtn.classList.add('participated');
+                if (isParticipateMobileUi()) {
+                    participateBtn.textContent = '참여 취소';
+                } else {
+                    participateBtn.innerHTML = PARTICIPATED_BTN_HTML;
+                }
+            } else {
+                participateBtn.classList.remove('participated');
+                participateBtn.textContent = '참여하기';
+            }
         }
 
         // Participate button functionality
@@ -458,28 +629,17 @@
                 isParticipated = participants.some(p => p.id === user.id);
             }
             
-            // Calculate displayed capacity based on actual unique participants
-            const displayedCurrent = event.capacity.current + participants.length;
+            const displayedCurrent = getDisplayCapacityCurrent(event, participants);
             
             // Update capacity display
             updateCapacityDisplay(displayedCurrent, event.capacity.total);
             
-            // Set button state
-            if (isParticipated && isLoggedIn) {
-                participateBtn.textContent = '참여 취소';
-                participateBtn.classList.add('participated');
-            } else {
-                participateBtn.textContent = '참여하기';
-                participateBtn.classList.remove('participated');
-            }
-
-            // Disable button if full
-            if (displayedCurrent >= event.capacity.total && !isParticipated) {
-                participateBtn.disabled = true;
-                participateBtn.textContent = '모집 마감';
-            } else {
-                participateBtn.disabled = false;
-            }
+            setParticipateButtonUi(participateBtn, {
+                isLoggedIn,
+                isParticipated,
+                current: displayedCurrent,
+                total: event.capacity.total
+            });
 
             // Render participants on load
             renderParticipants(event, participants);
@@ -489,25 +649,17 @@
                 participants = updatedParticipants;
                 const user = isLoggedIn ? JSON.parse(userInfo) : null;
                 const newIsParticipated = user ? participants.some(p => p.id === user.id) : false;
-                const newCurrent = event.capacity.current + participants.length;
+                const newCurrent = getDisplayCapacityCurrent(event, participants);
                 
                 updateCapacityDisplay(newCurrent, event.capacity.total);
                 renderParticipants(event, participants);
-                
-                if (newIsParticipated && isLoggedIn) {
-                    participateBtn.textContent = '참여 취소';
-                    participateBtn.classList.add('participated');
-                } else {
-                    participateBtn.textContent = '참여하기';
-                    participateBtn.classList.remove('participated');
-                }
-                
-                if (newCurrent >= event.capacity.total && !newIsParticipated) {
-                    participateBtn.disabled = true;
-                    participateBtn.textContent = '모집 마감';
-                } else {
-                    participateBtn.disabled = false;
-                }
+
+                setParticipateButtonUi(participateBtn, {
+                    isLoggedIn,
+                    isParticipated: newIsParticipated,
+                    current: newCurrent,
+                    total: event.capacity.total
+                });
                 
                 // Trigger custom event to update main page
                 window.dispatchEvent(new CustomEvent('eventParticipationChanged', {
@@ -518,22 +670,22 @@
             // Add click event
             participateBtn.addEventListener('click', async function() {
                 // Get current user info
-                const userInfo = localStorage.getItem('kakao_user');
-                if (!userInfo) {
+                const userInfoClick = localStorage.getItem('kakao_user');
+                if (!userInfoClick) {
                     alert('로그인이 필요합니다.');
                     return;
                 }
-                const user = JSON.parse(userInfo);
+                const user = JSON.parse(userInfoClick);
                 
                 // Disable button during operation
                 participateBtn.disabled = true;
                 
                 try {
                     // Get current participants
-                    let participants = await EventParticipants.getParticipants(event.id);
+                    let participantsList = await EventParticipants.getParticipants(event.id);
                     
                     // Check if user is already in participants
-                    const isAlreadyParticipated = participants.some(p => p.id === user.id);
+                    const isAlreadyParticipated = participantsList.some(p => p.id === user.id);
                     
                     if (isAlreadyParticipated) {
                         // Cancel participation
@@ -541,11 +693,19 @@
                         // Real-time subscription will update UI automatically
                     } else {
                         // Check capacity before participating
-                        const newCurrent = event.capacity.current + participants.length;
+                        const newCurrent = event.capacity.current + participantsList.length;
                         
                         if (newCurrent >= event.capacity.total) {
-                            alert('모집 인원이 마감되었습니다.');
-                            participateBtn.disabled = false;
+                            alert('마감되었습니다.');
+                            const p = await EventParticipants.getParticipants(event.id);
+                            const cur = getDisplayCapacityCurrent(event, p);
+                            const participated = p.some(x => x.id === user.id);
+                            setParticipateButtonUi(participateBtn, {
+                                isLoggedIn: true,
+                                isParticipated: participated,
+                                current: cur,
+                                total: event.capacity.total
+                            });
                             return;
                         }
                         
@@ -556,7 +716,15 @@
                 } catch (error) {
                     console.error('Error updating participation:', error);
                     alert(error.message || '참여 처리 중 오류가 발생했습니다.');
-                    participateBtn.disabled = false;
+                    const p = await EventParticipants.getParticipants(event.id);
+                    const cur = getDisplayCapacityCurrent(event, p);
+                    const participated = p.some(x => x.id === user.id);
+                    setParticipateButtonUi(participateBtn, {
+                        isLoggedIn: true,
+                        isParticipated: participated,
+                        current: cur,
+                        total: event.capacity.total
+                    });
                 }
             });
         }
@@ -570,6 +738,70 @@
                     value.textContent = `${current} / ${total}명`;
                 }
             });
+        }
+
+        function participantStatsPct(count, total) {
+            if (!total) return 0;
+            return Math.round((count / total) * 1000) / 10;
+        }
+
+        function renderParticipantRatioBars(participants) {
+            const total = participants.length;
+            const g = { male: 0, female: 0, unknown: 0 };
+            const ageOrder = [
+                { key: '20대', cls: 'participants-stat-seg--a20' },
+                { key: '30대', cls: 'participants-stat-seg--a30' },
+                { key: '40대', cls: 'participants-stat-seg--a40' },
+                { key: '50대+', cls: 'participants-stat-seg--a50' },
+                { key: '미입력', cls: 'participants-stat-seg--a-unknown' }
+            ];
+            const a = { '20대': 0, '30대': 0, '40대': 0, '50대+': 0, '미입력': 0 };
+
+            participants.forEach((p) => {
+                if (p.gender === 'female') g.female++;
+                else if (p.gender === 'male') g.male++;
+                else g.unknown++;
+                const ag = p.ageGroup && Object.prototype.hasOwnProperty.call(a, p.ageGroup) ? p.ageGroup : '미입력';
+                a[ag]++;
+            });
+
+            const gSegments = [
+                { count: g.male, cls: 'participants-stat-seg--male', label: '남' },
+                { count: g.female, cls: 'participants-stat-seg--female', label: '여' },
+                { count: g.unknown, cls: 'participants-stat-seg--g-unknown', label: '미입력' }
+            ];
+            const gBar = gSegments
+                .filter((s) => s.count > 0)
+                .map((s) => `<div class="participants-stat-seg ${s.cls}" style="width:${participantStatsPct(s.count, total)}%" title="${s.label} ${s.count}명"></div>`)
+                .join('');
+            const gLegend = gSegments
+                .filter((s) => s.count > 0)
+                .map((s) => `<span>${s.label} ${s.count}명 (${participantStatsPct(s.count, total)}%)</span>`)
+                .join('');
+
+            const aBar = ageOrder
+                .filter((row) => a[row.key] > 0)
+                .map((row) => `<div class="participants-stat-seg ${row.cls}" style="width:${participantStatsPct(a[row.key], total)}%" title="${row.key} ${a[row.key]}명"></div>`)
+                .join('');
+            const aLegend = ageOrder
+                .filter((row) => a[row.key] > 0)
+                .map((row) => `<span>${row.key} ${a[row.key]}명 (${participantStatsPct(a[row.key], total)}%)</span>`)
+                .join('');
+
+            return `
+                <div class="participants-stats">
+                    <div class="participants-stat-block">
+                        <div class="participants-stat-label">성별</div>
+                        <div class="participants-stat-bar">${gBar || `<div class="participants-stat-seg participants-stat-seg--g-unknown" style="width:100%"></div>`}</div>
+                        <div class="participants-stat-legend">${gLegend}</div>
+                    </div>
+                    <div class="participants-stat-block">
+                        <div class="participants-stat-label">연령대</div>
+                        <div class="participants-stat-bar">${aBar || `<div class="participants-stat-seg participants-stat-seg--a-unknown" style="width:100%"></div>`}</div>
+                        <div class="participants-stat-legend">${aLegend}</div>
+                    </div>
+                </div>
+            `;
         }
 
         function renderParticipants(event, participants = null) {
@@ -590,26 +822,14 @@
             const participantsSection = document.getElementById('participants-section');
             if (!participantsSection) return;
 
-            if (participants.length === 0) {
-                participantsSection.innerHTML = '';
+            const listForStats = getParticipantsForStats(event, participants);
+
+            if (listForStats.length === 0) {
+                participantsSection.innerHTML = '<p class="participants-empty">아직 참가한 사람이 없어요.</p>';
                 return;
             }
 
-            const participantsHTML = participants.map(participant => `
-                <div class="participant-item">
-                    <img src="${participant.profile_image || 'https://via.placeholder.com/50'}" 
-                         alt="${participant.nickname}" 
-                         class="participant-avatar"
-                         onerror="this.src='https://via.placeholder.com/50'">
-                    <span class="participant-name">${participant.nickname}</span>
-                </div>
-            `).join('');
-
-            participantsSection.innerHTML = `
-                <div class="participants-grid">
-                    ${participantsHTML}
-                </div>
-            `;
+            participantsSection.innerHTML = renderParticipantRatioBars(listForStats);
         }
 
         // 더보기 버튼 토글 함수
