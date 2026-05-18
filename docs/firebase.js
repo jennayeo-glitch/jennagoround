@@ -210,6 +210,155 @@ const EventParticipants = {
     }
 };
 
+// Event Reviews Management
+const EventReviews = {
+    // Get reviews for an event
+    async getReviews(eventId) {
+        if (!db) {
+            initFirebase();
+            if (!db) {
+                console.warn('Firebase not initialized, using localStorage fallback');
+                return this.getReviewsFromLocalStorage(eventId);
+            }
+        }
+
+        try {
+            const doc = await db.collection('events').doc(`event_${eventId}`).get();
+            if (doc.exists) {
+                return doc.data().reviews || [];
+            }
+            return [];
+        } catch (error) {
+            console.error('Error getting reviews:', error);
+            return this.getReviewsFromLocalStorage(eventId);
+        }
+    },
+
+    // Add review to an event
+    async addReview(eventId, user, comment, isAnonymous = false, displayNickname = null) {
+        if (!db) {
+            initFirebase();
+            if (!db) {
+                console.warn('Firebase not initialized, using localStorage fallback');
+                return this.addReviewToLocalStorage(eventId, user, comment, isAnonymous, displayNickname);
+            }
+        }
+
+        try {
+            const eventRef = db.collection('events').doc(`event_${eventId}`);
+            const eventDoc = await eventRef.get();
+            
+            let reviews = [];
+            if (eventDoc.exists) {
+                reviews = eventDoc.data().reviews || [];
+            }
+
+            // Determine display nickname
+            const finalNickname = displayNickname || (isAnonymous ? null : user.nickname);
+            
+            // Check if user already reviewed
+            const existingIndex = reviews.findIndex(r => r.userId === user.id);
+            if (existingIndex !== -1) {
+                // Update existing review
+                reviews[existingIndex] = {
+                    userId: user.id,
+                    nickname: finalNickname,
+                    profile_image: isAnonymous ? '' : (user.profile_image || ''),
+                    comment: comment,
+                    isAnonymous: isAnonymous,
+                    timestamp: new Date().toISOString()
+                };
+            } else {
+                // Add new review
+                reviews.push({
+                    userId: user.id,
+                    nickname: finalNickname,
+                    profile_image: isAnonymous ? '' : (user.profile_image || ''),
+                    comment: comment,
+                    isAnonymous: isAnonymous,
+                    timestamp: new Date().toISOString()
+                });
+            }
+
+            await eventRef.set({
+                reviews: reviews,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            // Also update localStorage as fallback
+            this.addReviewToLocalStorage(eventId, user, comment, isAnonymous, displayNickname);
+
+            return reviews;
+        } catch (error) {
+            console.error('Error adding review:', error);
+            throw error;
+        }
+    },
+
+    // Subscribe to real-time updates
+    subscribeToReviews(eventId, callback) {
+        if (!db) {
+            initFirebase();
+            if (!db) {
+                console.warn('Firebase not initialized, cannot subscribe to updates');
+                return () => {}; // Return empty unsubscribe function
+            }
+        }
+
+        try {
+            const unsubscribe = db.collection('events').doc(`event_${eventId}`)
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const reviews = doc.data().reviews || [];
+                        callback(reviews);
+                    } else {
+                        callback([]);
+                    }
+                }, (error) => {
+                    console.error('Error in subscription:', error);
+                });
+
+            return unsubscribe;
+        } catch (error) {
+            console.error('Error subscribing to reviews:', error);
+            return () => {};
+        }
+    },
+
+    // LocalStorage fallback methods
+    getReviewsFromLocalStorage(eventId) {
+        const key = `event_reviews_${eventId}`;
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : [];
+    },
+
+    addReviewToLocalStorage(eventId, user, comment, isAnonymous = false, displayNickname = null) {
+        const key = `event_reviews_${eventId}`;
+        let reviews = this.getReviewsFromLocalStorage(eventId);
+        
+        const existingIndex = reviews.findIndex(r => r.userId === user.id);
+        const finalNickname = displayNickname || (isAnonymous ? null : user.nickname);
+        
+        const reviewData = {
+            userId: user.id,
+            nickname: finalNickname,
+            profile_image: isAnonymous ? '' : (user.profile_image || ''),
+            comment: comment,
+            isAnonymous: isAnonymous,
+            timestamp: new Date().toISOString()
+        };
+
+        if (existingIndex !== -1) {
+            reviews[existingIndex] = reviewData;
+        } else {
+            reviews.push(reviewData);
+        }
+        
+        localStorage.setItem(key, JSON.stringify(reviews));
+        return reviews;
+    }
+};
+
 // Initialize Firebase when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initFirebase);

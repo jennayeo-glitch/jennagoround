@@ -1,5 +1,24 @@
 // Events data
+// meetupType: 지도 필터 — 'networking' | 'gathering' | 'small-group' (네트워킹 · 게더링 · 소모임)
+// kakaoChatUrl: 카카오 오픈채팅 등 링크 — 비어 있으면 톡방 버튼은 보이지만 비활성(링크 넣으면 활성)
+// demoParticipants: 상세 통계용 가상 참가자 — 있으면 성별·연령 막대에만 사용, 모집인원은 capacity 기준
 const eventsData = [
+    {
+        id: 10,
+        date: '2026-06-13',
+        displayDate: '2026.06.13',
+        location: '서울 용산구',
+        meetupType: 'gathering',
+        image: 'img/event/260613_smc.png',
+        alt: 'SMC Saturday Morning Crochet',
+        title: 'SMC (Saturday Morning Crochet)',
+        description:
+            'Welcome to Saturday Morning Crochet\n안녕하세요 😊\n\n혼자 뜨개질하다가 어느새 셋이 모여 뜨개질을 하고있어요\n이 따뜻한 취미를 더 많은 분들과 함께 나누고 싶어 이번 이벤트를 열게 되었습니다 🧶✨\n\n뜨개질이 처음이어도 괜찮아요!\n그냥 관심만 있어도 충분합니다 ☺️\n\n이번 모임은 미국인 친구들과 함께 진행하는 소셜링 모임이라\n영어와 한국어를 자연스럽게 섞어 대화하며\n언어 교환과 문화 교류도 함께 즐길 수 있어요! (두근)\n\n각자의 진행하시던 작업물을 가져와도 좋고,\n가볍게 빈손으로 오셔도 괜찮아요!\n\n실과 바늘은 저희가 준비해둘게요 🙂',
+        capacity: { current: 0, total: 24 },
+        status: 'Available',
+        category: 'regular gathering',
+        kakaoChatUrl: ''
+    },
     {
         id: 9,
         date: '2026-04-04',
@@ -20,6 +39,7 @@ const eventsData = [
         date: '2026-02-21',
         displayDate: '2026.02.21',
         location: '강남구',
+        meetupType: 'small-group',
         image: 'img/event/jenna/260221_bdayparty.png',
         alt: 'Birthday Party',
         title: '여졍\'s 생월파티',
@@ -34,7 +54,7 @@ const eventsData = [
         capacity: { current: 10, total: 10 },
         status: 'Sold Out',
         category: 'private party',
-        preparation: '사랑 지갑',
+        preparation: '사랑과 지갑',
         kakaoChatUrl: '',
         demoParticipants: [
             { id: 'demo-1', gender: 'female', ageGroup: '20대' },
@@ -58,7 +78,8 @@ const eventsData = [
         alt: 'Woo Yeon Event',
         capacity: { current: 30, total: 30 },
         status: 'Sold Out',
-        category: 'regular gathering'
+        category: 'regular gathering',
+        meetupType: 'gathering'
     },
     {
         id: 6,
@@ -69,18 +90,32 @@ const eventsData = [
         alt: 'Event Case 1101',
         capacity: { current: 100, total: 100 },
         status: 'Sold Out',
-        category: 'private party'
+        category: 'private party',
+        meetupType: 'networking'
     },
     {
         id: 6,
-        date: '2025-08-30',
-        displayDate: '2025.08.30',
+        date: '2024-08-30',
+        displayDate: '2024.08.30',
         location: '송파구',
-        image: 'img/event/chaejae/250830_jaespecialnight25.png',
+        image: 'img/event/chaejae/240830_jaespecialnight25.png',
         alt: 'Jae Special Night 25',
         capacity: { current: 50, total: 50 },
         status: 'Sold Out',
-        category: 'private party'
+        category: 'private party',
+        meetupType: 'gathering'
+    },
+    {
+        id: 8,
+        date: '2025-10-18',
+        displayDate: '2025.10.18',
+        location: '용산구',
+        image: 'img/event/chaejae/251018_jaespecialnight.png',
+        alt: 'Jae Special Night',
+        capacity: { current: 60, total: 60 },
+        status: 'Sold Out',
+        category: 'private party',
+        meetupType: 'networking'
     },
     {
         id: 6,
@@ -91,18 +126,20 @@ const eventsData = [
         alt: 'Event TOT 24',
         capacity: { current: 80, total: 80 },
         status: 'Sold Out',
-        category: 'private party'
+        category: 'private party',
+        meetupType: 'small-group'
     },
     {
         id: 6,
-        date: '2024-07-30',
-        displayDate: '2024.07.30',
+        date: '2023-07-30',
+        displayDate: '2023.07.30',
         location: '강남구',
-        image: 'img/event/chaejae/240730_jaespecialnight24.png',
+        image: 'img/event/chaejae/230730_jaespecialnight24.png',
         alt: 'Jae Special Night 24',
         capacity: { current: 40, total: 40 },
         status: 'Sold Out',
-        category: 'private party'
+        category: 'private party',
+        meetupType: 'networking'
     },
     {
         id: 6,
@@ -113,18 +150,20 @@ const eventsData = [
         alt: 'Event TOT 22',
         capacity: { current: 60, total: 60 },
         status: 'Sold Out',
-        category: 'private party'
+        category: 'private party',
+        meetupType: 'small-group'
     },
     {
         id: 7,
         date: '2021-10-29',
         displayDate: '2021.10.29',
         location: '용산구',
-        image: 'img/event/jenna/20211029_halloween.JPG',
+        image: 'img/event/jenna/20211029_halloween.png',
         alt: 'Halloween Party',
         capacity: { current: 8, total: 8 },
         status: 'Sold Out',
-        category: 'private party'
+        category: 'private party',
+        meetupType: 'gathering'
     }
 ];
 

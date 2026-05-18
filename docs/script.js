@@ -6,6 +6,26 @@ function getCardCapacityCurrent(event, participants) {
     return event.capacity.current + participants.length;
 }
 
+/** 일정 종료 후 카드 상태 (Sold Out 과 구분) */
+function isPastEventDay(eventDateStr) {
+    const [y, m, d] = eventDateStr.split('-').map(Number);
+    const eventDay = new Date(y, m - 1, d);
+    eventDay.setHours(0, 0, 0, 0);
+    const todayLocal = new Date();
+    todayLocal.setHours(0, 0, 0, 0);
+    return eventDay < todayLocal;
+}
+
+function displayEventStatus(event, actualCurrent) {
+    if (isPastEventDay(event.date)) {
+        return 'Ended';
+    }
+    if (actualCurrent >= event.capacity.total) {
+        return 'Sold Out';
+    }
+    return 'Available';
+}
+
 // Render events
 function renderEvents(filterCategory = 'all') {
     const eventsGrid = document.getElementById('events-grid');
@@ -35,13 +55,7 @@ function renderEvents(filterCategory = 'all') {
         const participants = JSON.parse(localStorage.getItem(participantsKey) || '[]');
         const actualCurrent = getCardCapacityCurrent(event, participants);
         
-        // Determine status based on actual capacity
-        let displayStatus = event.status;
-        if (actualCurrent >= event.capacity.total) {
-            displayStatus = 'Sold Out';
-        } else {
-            displayStatus = 'Available';
-        }
+        const displayStatus = displayEventStatus(event, actualCurrent);
 
         eventCard.innerHTML = `
             <img src="${event.image}" alt="${event.alt}" class="event-poster-image">
@@ -65,7 +79,7 @@ function renderEvents(filterCategory = 'all') {
 
         // Add click event to navigate to detail page
         eventCard.addEventListener('click', function() {
-            if ([1, 9].includes(event.id)) {
+            if ([1, 9, 10].includes(event.id)) {
                 window.location.href = `event-detail.html?id=${event.id}`;
             } else {
                 alert('상세페이지 준비중입니다.');
@@ -253,14 +267,8 @@ async function updateEventCapacity(eventId) {
     }
     
     const actualCurrent = getCardCapacityCurrent(event, participants);
-    
-    // Determine status based on actual capacity
-    let displayStatus = event.status;
-    if (actualCurrent >= event.capacity.total) {
-        displayStatus = 'Sold Out';
-    } else {
-        displayStatus = 'Available';
-    }
+
+    const displayStatus = displayEventStatus(event, actualCurrent);
     
     // Update capacity and status
     const capacityElement = eventCard.querySelector('.info-capacity .info-value');

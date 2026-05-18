@@ -336,7 +336,13 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Responsive Design */
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+/* Touch: prevent 300ms tap delay on interactive elements */
+a, button, [role="button"] {
+    touch-action: manipulation;
+}
+
 @media (max-width: 1200px) {
     .header-container {
         padding: 30px 40px;
@@ -355,148 +361,164 @@ body {
 
     html, body {
         overflow-x: hidden;
-        position: relative;
         width: 100%;
-        touch-action: pan-y;
     }
-    
+
     body {
         font-size: 13px;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
     }
 
-    .info-value {
-        font-size: 19px;
-    }
-
-    .info-item.info-date,
-    .info-item.info-location {
-        top: 16px;
-    }
-
-    .info-item.info-date {
-        left: 16px;
-    }
-
-    .info-item.info-location {
-        right: 16px;
-    }
-
-    .info-item.info-capacity,
-    .info-item.info-status {
-        bottom: 16px;
-    }
-
-    .info-item.info-capacity {
-        left: 16px;
-    }
-
-    .info-item.info-status {
-        right: 16px;
-    }
-    
     .main {
         overflow-x: hidden;
     }
-    
+
+    /* ── Header ── */
     .header-container {
-        padding: 20px 20px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
+        padding: 16px 20px;
+        flex-direction: row;
+        align-items: center;
+        gap: 0;
+        flex-wrap: nowrap;
     }
 
     .logo-image {
-        height: 35px;
+        height: 32px;
     }
 
     .header-nav {
         flex-direction: row;
-        gap: 20px;
-        width: 100%;
-        flex-wrap: wrap;
+        gap: 16px;
+        width: auto;
+        flex-wrap: nowrap;
+        margin-left: auto;
     }
 
-    /* Hide service, mypage, and inquiry links on mobile */
+    /* Keep only auth on mobile */
     .header-nav .nav-link:not(.kakao-login-btn):not(.logout-btn) {
         display: none;
     }
 
+    .auth-section {
+        width: auto;
+        justify-content: flex-end;
+    }
+
+    /* ── Index page layout ── */
     .content-wrapper {
         grid-template-columns: 1fr;
-        gap: 40px;
-        padding: 40px 20px 60px;
+        gap: 0;
+        padding: 24px 20px 60px;
     }
 
     .sidebar {
         position: static;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 28px;
     }
 
     .sidebar-nav {
         flex-direction: row;
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 8px;
     }
 
     .sidebar-link {
-        border-bottom: none;
+        font-size: 13px;
+        padding: 4px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 999px;
+        border-bottom: 1px solid var(--border-color) !important;
     }
 
     .sidebar-link.active {
-        border-bottom: 2px solid var(--text-dark);
+        background: #111;
+        color: #fff;
+        border-color: #111 !important;
     }
 
-    /* Hide all menu items except "all" on mobile */
+    /* Show all sidebar links on mobile (pill chips) */
     .sidebar-link:not(.sidebar-link-all) {
-        display: none;
+        display: inline-block;
     }
 
-    .sidebar-link-all {
-        display: block;
+    /* ── Events grid ── */
+    .events-grid {
+        gap: 24px;
     }
 
-    .content-title {
-        font-size: 28px;
-        margin-bottom: 30px;
+    /* ── Overlay info ── */
+    .info-value {
+        font-size: 18px;
     }
 
-    .content-section {
-        margin-bottom: 40px;
+    .info-item.info-date,
+    .info-item.info-location {
+        top: 14px;
     }
 
-    .content-section:not(:last-child) {
-        padding-bottom: 40px;
+    .info-item.info-date    { left: 14px; }
+    .info-item.info-location { right: 14px; }
+
+    .info-item.info-capacity,
+    .info-item.info-status {
+        bottom: 14px;
     }
 
+    .info-item.info-capacity { left: 14px; }
+    .info-item.info-status   { right: 14px; }
+
+    /* ── Top button ── */
     .top-button {
-        bottom: 20px;
-        right: 20px;
-        width: 45px;
-        height: 45px;
+        bottom: 16px;
+        right: 16px;
+        width: 44px;
+        height: 44px;
+        font-size: 11px;
     }
 }
 
 @media (max-width: 480px) {
-    html {
+    html, body {
         font-size: 12px;
     }
 
-    body {
-        font-size: 12px;
-    }
-
-    .info-value {
-        font-size: 17px;
+    .header-container {
+        padding: 14px 16px;
     }
 
     .logo-image {
         height: 28px;
     }
 
-    .events-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+    .content-wrapper {
+        padding: 20px 16px 50px;
     }
 
+    .info-value {
+        font-size: 15px;
+    }
+
+    .info-item.info-date,
+    .info-item.info-location {
+        top: 10px;
+    }
+
+    .info-item.info-date    { left: 10px; }
+    .info-item.info-location { right: 10px; }
+
+    .info-item.info-capacity,
+    .info-item.info-status {
+        bottom: 10px;
+    }
+
+    .info-item.info-capacity { left: 10px; }
+    .info-item.info-status   { right: 10px; }
+
+    .events-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
 }

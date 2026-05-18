@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서울 이벤트 지도 — jennagoround</title>
+    <meta property="og:title" content="서울 이벤트 지도 — jennagoround">
+    <meta property="og:description" content="오늘 서울에서 열리는 축제, 팝업, 콘서트, 전시, 마켓, 파티를 지도에서 찾아보세요.">
+    <!-- 임시 지도: Leaflet + OpenStreetMap (카카오 설정 없이 동작) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <style>
+        /* ── Map page body: grid로 남은 높이 확실히 배분 (flex만 쓰면 지도 영역 높이 0 가능) ── */
+        body.map-page-body {
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            min-height: 100vh;
+            height: 100vh;
+            max-height: 100vh;
+        }
+
+        /* ── Discovery layout ────────────────────────────────────────────── */
+        .discovery-main {
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .discovery-wrap {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+            flex: 1;
+        }
+
+        /* ── Left panel ──────────────────────────────────────────────────── */
+        .discovery-panel {
+            width: 340px;
+            min-width: 280px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            background: var(--bg-white);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 20px 20px 0;
+            flex-shrink: 0;
+        }
+
+        .panel-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .panel-subtitle {
+            font-size: 11px;
+            color: var(--text-light-gray);
+            margin-bottom: 14px;
+        }
+
+        /* ── Search ──────────────────────────────────────────────────────── */
+        .panel-search {
+            padding: 0 16px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 9px 12px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            color: var(--text-dark);
+            background: var(--bg-light);
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .search-input::placeholder { color: var(--text-light-gray); }
+
+        .search-input:focus {
+            border-color: #888;
+            background: var(--bg-white);
+        }
+
+        /* ── Category chips ──────────────────────────────────────────────── */
+        .panel-cats {
+            padding: 0 16px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .chips-scroll {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .chips-scroll::-webkit-scrollbar { height: 0; }
+
+        .chip {
+            flex-shrink: 0;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1.5px solid var(--border-color);
+            background: var(--bg-white);
+            color: var(--text-gray);
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .chip:hover { border-color: #aaa; color: var(--text-dark); }
+
+        .chip.active { background: #111; color: #fff; border-color: #111; }
+        .chip.active[data-cat="festival"]   { background: #f43f5e; border-color: #f43f5e; }
+        .chip.active[data-cat="popup"]      { background: #8b5cf6; border-color: #8b5cf6; }
+        .chip.active[data-cat="concert"]    { background: #3b82f6; border-color: #3b82f6; }
+        .chip.active[data-cat="exhibition"] { background: #f59e0b; border-color: #f59e0b; }
+        .chip.active[data-cat="market"]     { background: #10b981; border-color: #10b981; }
+        .chip.active[data-cat="party"]      { background: #ec4899; border-color: #ec4899; }
+
+        /* ── Time chips ──────────────────────────────────────────────────── */
+        .panel-time {
+            display: flex;
+            gap: 6px;
+            padding: 0 16px 12px;
+            flex-shrink: 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .time-chip {
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            background: var(--bg-white);
+            color: var(--text-gray);
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .time-chip:hover { border-color: #aaa; color: var(--text-dark); }
+
+        .time-chip.active {
+            background: #111;
+            color: #fff;
+            border-color: #111;
+        }
+
+        /* ── Event count ─────────────────────────────────────────────────── */
+        .panel-count {
+            padding: 10px 16px 6px;
+            font-size: 11px;
+            color: var(--text-light-gray);
+            flex-shrink: 0;
+        }
+
+        /* ── Scrollable list ─────────────────────────────────────────────── */
+        .panel-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 10px 20px;
+            min-height: 0;
+        }
+
+        .panel-list::-webkit-scrollbar { width: 3px; }
+        .panel-list::-webkit-scrollbar-track { background: transparent; }
+        .panel-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 2px; }
+
+        /* ── Event card ──────────────────────────────────────────────────── */
+        .event-item {
+            padding: 12px;
+            margin-bottom: 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 1.5px solid transparent;
+            transition: all 0.15s;
+            background: var(--bg-light);
+        }
+
+        .event-item:hover {
+            background: #efefef;
+        }
+
+        .event-item.highlighted {
+            background: #fff;
+            border-color: #111;
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .event-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            gap: 6px;
+        }
+
+        .event-cat-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .event-status-badge {
+            font-size: 10px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .event-item-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .event-item-meta {
+            font-size: 11px;
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        .event-item-price {
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .no-events-msg {
+            text-align: center;
+            padding: 48px 16px;
+            color: var(--text-light-gray);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* ── Map area ────────────────────────────────────────────────────── */
+        .discovery-map-wrap {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            min-width: 0;
+            min-height: 320px;
+        }
+
+        /* Leaflet 맵 컨테이너 */
+        #map {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            z-index: 1;
+            background: #e8eef5;
+        }
+
+        #map.leaflet-container {
+            font-family: inherit;
+        }
+
+        .map-marker-divicon {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        /* ── Custom marker ───────────────────────────────────────────────── */
+        .map-pin {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2.5px solid #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+            cursor: pointer;
+            transition: box-shadow 0.15s, transform 0.15s;
+            user-select: none;
+        }
+
+        .map-pin:hover {
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+            transform: scale(1.12);
+        }
+
+        .map-pin-inner {
+            font-size: 15px;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        /* ── Popup ───────────────────────────────────────────────────────── */
+        .map-popup-inner {
+            padding: 4px 2px;
+            min-width: 200px;
+            max-width: 260px;
+        }
+
+        .map-popup-cat {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 999px;
+            margin-bottom: 7px;
+        }
+
+        .map-popup-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 5px;
+            line-height: 1.35;
+        }
+
+        .map-popup-venue,
+        .map-popup-date {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .map-popup-price {
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+
+        /* ── Detail modal ───────────────────────────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+            animation: overlayIn 0.18s ease;
+        }
+
+        @keyframes overlayIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .modal-card {
+            background: #fff;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 460px;
+            max-height: 88vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+            animation: modalIn 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0)    scale(1);    }
+        }
+
+        .modal-card::-webkit-scrollbar { width: 0; }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(4px);
+            border-radius: 50%;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            transition: background 0.15s;
+            z-index: 10;
+            font-family: inherit;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+        }
+
+        .modal-close-btn:hover { background: #e0e0e0; color: #111; }
+
+        .modal-image {
+            width: 100%;
+            height: 210px;
+            overflow: hidden;
+            border-radius: 16px 16px 0 0;
+            flex-shrink: 0;
+        }
+
+        .modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ── 캐로셀 ─────────────────────────────────────────────────────────── */
+        .modal-carousel {
+            position: relative;
+            width: 100%;
+            height: 210px;
+            overflow: hidden;
+            border-radius: 16px 16px 0 0;
+            flex-shrink: 0;
+            background: #f3f4f6;
+        }
+
+        .carousel-track { width: 100%; height: 100%; }
+
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .carousel-slide.active { display: block; }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(4px);
+            border: none;
+            border-radius: 50%;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            z-index: 2;
+            transition: background 0.15s;
+        }
+
+        .carousel-btn:hover { background: #fff; }
+        .carousel-prev { left: 10px; }
+        .carousel-next { right: 10px; }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+            z-index: 2;
+        }
+
+        .carousel-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: background 0.15s, transform 0.15s;
+        }
+
+        .carousel-dot.active {
+            background: #fff;
+            transform: scale(1.3);
+        }
+
+        .carousel-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(0,0,0,0.4);
+            padding: 2px 8px;
+            border-radius: 999px;
+            z-index: 2;
+        }
+
+        .modal-body { padding: 0; }
+
+        .modal-body-inner { padding: 22px 24px 20px; }
+
+        .modal-unconfirmed-banner {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #92400e;
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .modal-unconfirmed-banner a {
+            color: #b45309;
+            font-weight: 600;
+            text-decoration: underline;
+            margin-left: 4px;
+        }
+
+        .modal-header-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .modal-cat-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 999px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111;
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+
+        .modal-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 16px;
+            padding: 14px 16px;
+            background: var(--bg-light);
+            border-radius: 10px;
+        }
+
+        .modal-meta-row {
+            font-size: 13px;
+            color: var(--text-dark);
+            line-height: 1.5;
+            display: flex;
+            gap: 6px;
+        }
+
+        .modal-meta-addr {
+            font-size: 11px;
+            color: var(--text-light-gray);
+            padding-left: 20px;
+        }
+
+        .modal-desc {
+            font-size: 13px;
+            color: var(--text-gray);
+            line-height: 1.75;
+            margin-bottom: 14px;
+            white-space: pre-line;
+        }
+
+        .modal-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+
+        .modal-tag {
+            font-size: 11px;
+            color: var(--text-gray);
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            padding: 3px 10px;
+            border-radius: 999px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+            padding-top: 14px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .modal-price-label {
+            font-size: 11px;
+            color: var(--text-light-gray);
+            margin-bottom: 2px;
+        }
+
+        .modal-price-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .modal-footer-btns {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .modal-map-btn,
+        .modal-homepage-btn {
+            flex-shrink: 0;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.15s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .modal-map-btn {
+            border: 1.5px solid #111;
+            background: #111;
+            color: #fff;
+        }
+
+        .modal-homepage-btn {
+            border: 1.5px solid #e5e7eb;
+            background: #fff;
+            color: #374151;
+        }
+
+        .modal-map-btn:hover,
+        .modal-homepage-btn:hover { opacity: 0.7; }
+
+        /* 검색 링크 버튼 (공식 홈페이지 없을 때) */
+        .modal-search-btn {
+            border-color: #e5e7eb;
+            background: #f9fafb;
+            color: #6b7280;
+        }
+
+        /* 이미지 없는 경우 플레이스홀더 */
+        .modal-image-placeholder {
+            width: 100%;
+            height: 210px;
+            overflow: hidden;
+            border-radius: 16px 16px 0 0;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .placeholder-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.7;
+        }
+
+        .placeholder-emoji {
+            font-size: 52px;
+            line-height: 1;
+        }
+
+        .placeholder-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            letter-spacing: 0.03em;
+        }
+
+        /* Mobile: bottom sheet */
+        @media (max-width: 600px) {
+            .modal-overlay {
+                align-items: flex-end;
+                padding: 0;
+            }
+
+            .modal-card {
+                border-radius: 20px 20px 0 0;
+                max-height: 85vh;
+                animation: sheetIn 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+            }
+
+            .modal-image,
+            .modal-carousel,
+            .modal-image-placeholder { border-radius: 20px 20px 0 0; }
+
+            @keyframes sheetIn {
+                from { transform: translateY(100%); }
+                to   { transform: translateY(0); }
+            }
+        }
+
+        /* ── Mobile ──────────────────────────────────────────────────────── */
+        @media (max-width: 768px) {
+            body.map-page-body {
+                overflow-y: auto;
+                display: block;
+                height: auto;
+                max-height: none;
+                min-height: 100vh;
+            }
+
+            .discovery-main {
+                flex-direction: column;
+                overflow: visible;
+                height: auto;
+                min-height: 0;
+            }
+
+            .discovery-wrap {
+                flex-direction: column;
+                height: auto;
+            }
+
+            /* Map first on mobile (more important) */
+            .discovery-panel { order: 2; }
+            .discovery-map-wrap { order: 1; }
+
+            .discovery-map-wrap {
+                height: 52vh;
+                min-height: 280px;
+                flex: none;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+
+            .discovery-panel {
+                width: 100%;
+                min-width: unset;
+                height: auto;
+                max-height: none;
+                overflow: visible;
+                border-right: none;
+                border-top: 1px solid var(--border-color);
+            }
+
+            .panel-header {
+                padding: 16px 16px 0;
+            }
+
+            .panel-search { padding: 0 12px; }
+            .panel-cats   { padding: 0 12px; }
+            .panel-time   { padding: 0 12px 10px; }
+            .panel-count  { padding: 8px 12px 4px; }
+
+            .panel-list {
+                max-height: 340px;
+                padding: 0 8px 16px;
+            }
+
+            .event-item { padding: 10px; }
+        }
+
+        @media (max-width: 480px) {
+            .discovery-map-wrap {
+                height: 45vh;
+                min-height: 240px;
+                position: static; /* disable sticky on very small screens */
+            }
+
+            .panel-list { max-height: 280px; }
+
+            .modal-body { padding: 20px 20px 18px; }
+
+            .modal-title { font-size: 17px; }
+        }
+    </style>
+  <link rel="stylesheet" crossorigin href="./assets/styles-bMoHsi2H.css">
+</head>
+<body class="map-page-body">
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; display: flex; align-items: center;">
+                    <img src="./assets/jennagoround_logo-DIthJClY.png" alt="ppl person" class="logo-image">
+                </a>
+            </div>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link">서비스</a>
+                <a href="map.html" class="nav-link active">이벤트 지도</a>
+                <a href="index.html" class="nav-link">마이페이지</a>
+                <a href="index.html" class="nav-link">문의하기</a>
+                <div class="auth-section">
+                    <button id="kakao-login-btn" class="nav-link kakao-login-btn">kakao login</button>
+                    <div id="user-info" class="user-info" style="display: none;">
+                        <span id="user-name" class="user-name"></span>
+                        <button id="logout-btn" class="nav-link logout-btn">로그아웃</button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main discovery-main">
+        <div class="discovery-wrap">
+
+            <!-- ── Left panel ──────────────────────────────────────── -->
+            <div class="discovery-panel">
+                <div class="panel-header">
+                    <div class="panel-title">이 도시에서 오늘</div>
+                    <div class="panel-subtitle">서울 축제 · 팝업 · 콘서트 · 전시 · 마켓 · 파티 · <span style="color:#888">지도 임시: OSM</span></div>
+                </div>
+
+                <div class="panel-search">
+                    <input type="text" id="search-input" class="search-input" placeholder="이벤트, 장소 검색...">
+                </div>
+
+                <div class="panel-cats">
+                    <div class="chips-scroll">
+                        <button class="chip active" data-cat="all">전체</button>
+                        <button class="chip" data-cat="festival">🌸 축제</button>
+                        <button class="chip" data-cat="popup">🛍 팝업</button>
+                        <button class="chip" data-cat="concert">🎵 콘서트</button>
+                        <button class="chip" data-cat="exhibition">🎨 전시</button>
+                        <button class="chip" data-cat="market">🛒 마켓</button>
+                        <button class="chip" data-cat="party">🎉 파티</button>
+                    </div>
+                </div>
+
+                <div class="panel-time">
+                    <button class="time-chip active" data-time="all">전체</button>
+                    <button class="time-chip" data-time="today">오늘</button>
+                    <button class="time-chip" data-time="week">이번 주</button>
+                    <button class="time-chip" data-time="month">이번 달</button>
+                </div>
+
+                <div class="panel-count" id="panel-count"></div>
+
+                <div class="panel-list" id="panel-list">
+                    <!-- rendered by map.js -->
+                </div>
+            </div>
+
+            <!-- ── Map ─────────────────────────────────────────────── -->
+            <div class="discovery-map-wrap">
+                <div id="map" role="application" aria-label="서울 이벤트 지도"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ── Event detail modal ──────────────────────────────────────────── -->
+    <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-card" id="modal-card">
+            <button class="modal-close-btn" id="modal-close-btn" aria-label="닫기">✕</button>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- App -->
+    <script src="firebase.js"></script>
+    <script src="city-events-api.js"></script>
+    <script src="city-events.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="map.js"></script>
+</body>
+</html>

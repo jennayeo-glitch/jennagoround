@@ -8,7 +8,6 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jennayeo-glitch.github.io/jennagoround/event-detail.html">
     <meta property="og:description" content="해피여졍 이벤트 상세 페이지">
-    <link rel="stylesheet" href="styles.css">
     <!-- Kakao SDK -->
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <style>
@@ -55,9 +54,75 @@
             margin-top: 60px;
             padding-top: 40px;
             border-top: 1px solid var(--border-color);
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .tab-button {
+            padding: 15px 30px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            bottom: -2px;
+        }
+
+        .tab-button:hover {
+            color: var(--text-dark);
+        }
+
+        .tab-button.active {
+            color: var(--text-dark);
+            border-bottom-color: var(--text-dark);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content-schedule {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .schedule-info-block {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 32px 48px;
+            width: 100%;
+        }
+
+        .schedule-panel {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .schedule-panel--participants {
+            border-left: 1px solid var(--border-color);
+            padding-left: 32px;
         }
 
         .event-detail-description {
@@ -114,51 +179,9 @@
             width: 100%;
         }
 
-        .schedule-content {
-            width: 100%;
-            display: flex;
-            flex-direction: row;
-            gap: 32px 48px;
-            align-items: flex-start;
-        }
-
-        .schedule-panel {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .schedule-panel--participants {
-            border-left: 1px solid var(--border-color);
-            padding-left: 32px;
-        }
-
-        .event-detail-schedule h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--text-dark);
-        }
-
-        .schedule-item {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
-        }
-
-        .schedule-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-gray);
-            min-width: 100px;
-        }
-
-        .schedule-value {
-            font-size: 16px;
-            color: var(--text-dark);
-        }
-
         .schedule-actions {
-            margin-top: 24px;
+            margin-top: 0;
+            padding-top: 8px;
             width: 100%;
             display: flex;
             flex-direction: row;
@@ -172,18 +195,6 @@
             min-width: 0;
             text-align: center;
             border-radius: 0;
-        }
-
-        .participate-button {
-            padding: 15px 40px;
-            background-color: var(--text-dark);
-            color: var(--bg-white);
-            border: none;
-            border-radius: 0;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
         }
 
         .participate-button--secondary {
@@ -221,6 +232,44 @@
             display: inline;
         }
 
+        .event-detail-schedule h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .schedule-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .schedule-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-gray);
+            min-width: 100px;
+        }
+
+        .schedule-value {
+            font-size: 16px;
+            color: var(--text-dark);
+        }
+
+        .participate-button {
+            margin-top: 0;
+            padding: 12px 30px;
+            background-color: var(--text-dark);
+            color: var(--bg-white);
+            border: none;
+            border-radius: 0;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
         .participate-button:hover {
             background-color: var(--text-gray);
         }
@@ -245,6 +294,7 @@
             flex-direction: column;
             align-items: flex-start;
             gap: 0;
+            min-height: 0;
             width: 100%;
         }
 
@@ -311,6 +361,163 @@
             color: var(--text-light-gray);
         }
 
+        /* Reviews Section */
+        .reviews-section {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .reviews-section h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--text-dark);
+        }
+
+        .review-form {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+
+        .review-form h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .review-anonymity-option {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .review-anonymity-option label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .review-anonymity-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--text-dark);
+        }
+
+        .review-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .review-textarea:focus {
+            outline: none;
+            border-color: var(--text-dark);
+        }
+
+        .review-submit-btn {
+            padding: 12px 30px;
+            background-color: var(--text-dark);
+            color: var(--bg-white);
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .review-submit-btn:hover {
+            background-color: var(--text-gray);
+        }
+
+        .review-submit-btn:disabled {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
+        }
+
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .review-item {
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-white);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .reviewer-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        .reviewer-info {
+            flex: 1;
+        }
+
+        .reviewer-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .review-date {
+            font-size: 12px;
+            color: var(--text-light-gray);
+        }
+
+        .review-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-dark);
+            white-space: pre-wrap;
+        }
+
+        .no-reviews {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light-gray);
+            font-size: 14px;
+        }
+
+        .review-login-prompt {
+            text-align: center;
+            padding: 30px 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
             .event-detail-container {
                 padding: 36px 16px;
@@ -323,6 +530,10 @@
 
             .event-detail-content--single {
                 grid-template-columns: 1fr;
+            }
+
+            .event-detail-image {
+                width: 100%;
             }
 
             .event-detail-description p {
@@ -356,7 +567,20 @@
                 font-size: 11px;
             }
 
-            .schedule-content {
+            .review-textarea {
+                font-size: 14px;
+            }
+
+            .review-content {
+                font-size: 14px;
+            }
+
+            .event-detail-bottom {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .schedule-info-block {
                 flex-direction: column;
                 gap: 28px;
             }
@@ -368,31 +592,84 @@
                 padding-top: 24px;
             }
 
-            .participants-section {
-                align-items: flex-start;
-            }
-            
-            .event-detail-image {
-                width: 100%;
+            .tab-button {
+                padding: 12px 20px;
+                font-size: 14px;
             }
 
-            .event-detail-bottom {
-                grid-template-columns: 1fr;
-                gap: 30px;
+            .schedule-actions {
+                flex-direction: column;
+            }
+
+            .event-detail-description h2,
+            .event-detail-schedule h2 {
+                font-size: 18px;
+                margin-bottom: 14px;
+            }
+
+            .reviews-section h2 {
+                font-size: 18px;
+                margin-bottom: 20px;
+            }
+
+            .tabs-container {
+                margin-top: 40px;
+                padding-top: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .event-detail-container {
+                padding: 20px 16px 40px;
+            }
+
+            .tab-button {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+
+            .tabs-header {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tabs-header::-webkit-scrollbar { height: 0; }
+
+            .review-form {
+                padding: 16px;
+            }
+
+            .schedule-item {
+                flex-direction: column;
+                gap: 4px;
+                margin-bottom: 12px;
+            }
+
+            .schedule-label {
+                min-width: unset;
+                font-size: 11px;
+                color: var(--text-light-gray);
+            }
+
+            .schedule-value {
+                font-size: 14px;
             }
         }
     </style>
+  <link rel="stylesheet" crossorigin href="./assets/styles-bMoHsi2H.css">
 </head>
 <body>
     <header class="header">
         <div class="header-container">
             <div class="logo">
                 <a href="index.html" style="text-decoration: none; display: flex; align-items: center;">
-                    <img src="img/logo/jennagoround_logo.png" alt="ppl person" class="logo-image">
+                    <img src="./assets/jennagoround_logo-DIthJClY.png" alt="ppl person" class="logo-image">
                 </a>
             </div>
             <nav class="header-nav">
                 <a href="index.html" class="nav-link">서비스</a>
+                <a href="map.html" class="nav-link">이벤트 지도</a>
                 <a href="index.html" class="nav-link">마이페이지</a>
                 <a href="index.html" class="nav-link">문의하기</a>
                 <div class="auth-section">
@@ -416,8 +693,21 @@
                 <div id="event-detail-description" class="event-detail-description">
                     <!-- Event description will be rendered here -->
                 </div>
-                <div id="event-detail-schedule" class="event-detail-schedule">
-                    <!-- Event schedule will be rendered here -->
+            </div>
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-button active" data-tab="schedule">일정 및 안내</button>
+                    <button class="tab-button" data-tab="reviews">리뷰</button>
+                </div>
+                <div id="tab-schedule" class="tab-content active">
+                    <div id="event-detail-schedule" class="event-detail-schedule">
+                        <!-- Event schedule will be rendered here -->
+                    </div>
+                </div>
+                <div id="tab-reviews" class="tab-content">
+                    <div id="reviews-section" class="reviews-section">
+                        <!-- Reviews will be rendered here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -522,31 +812,33 @@
                 const kakaoChatBtn = kakaoChatUrl
                     ? `<a href="${kakaoChatUrl.replace(/"/g, '&quot;')}" class="participate-button participate-button--secondary" target="_blank" rel="noopener noreferrer">톡방 입장</a>`
                     : `<button type="button" class="participate-button participate-button--secondary participate-button--chat-disabled" disabled title="오픈채팅 링크를 넣으면 여기서 바로 열 수 있어요">톡방 입장</button>`;
-                
+
                 scheduleSection.innerHTML = `
-                    <div class="schedule-content">
-                        <div class="schedule-panel schedule-panel--info">
-                            <div class="schedule-item">
-                                <span class="schedule-label">날짜</span>
-                                <span class="schedule-value">${event.displayDate}</span>
+                    <div class="tab-content-schedule">
+                        <div class="schedule-info-block">
+                            <div class="schedule-panel schedule-panel--info">
+                                <div class="schedule-item">
+                                    <span class="schedule-label">날짜</span>
+                                    <span class="schedule-value">${event.displayDate}</span>
+                                </div>
+                                <div class="schedule-item">
+                                    <span class="schedule-label">위치</span>
+                                    <span class="schedule-value">${event.location}</span>
+                                </div>
+                                <div class="schedule-item">
+                                    <span class="schedule-label">모집인원</span>
+                                    <span class="schedule-value">${event.capacity.current} / ${event.capacity.total}명</span>
+                                </div>
+                                ${feeOrPreparationSection}
                             </div>
-                            <div class="schedule-item">
-                                <span class="schedule-label">위치</span>
-                                <span class="schedule-value">${event.location}</span>
+                            <div class="schedule-panel schedule-panel--participants">
+                                <div id="participants-section" class="participants-section"></div>
                             </div>
-                            <div class="schedule-item">
-                                <span class="schedule-label">모집인원</span>
-                                <span class="schedule-value">${event.capacity.current} / ${event.capacity.total}명</span>
-                            </div>
-                            ${feeOrPreparationSection}
                         </div>
-                        <div class="schedule-panel schedule-panel--participants">
-                            <div id="participants-section" class="participants-section"></div>
+                        <div class="schedule-actions">
+                            <button id="participate-btn" class="participate-button">참여하기</button>
+                            ${kakaoChatBtn}
                         </div>
-                    </div>
-                    <div class="schedule-actions">
-                        <button id="participate-btn" class="participate-button">참여하기</button>
-                        ${kakaoChatBtn}
                     </div>
                 `;
             }
@@ -556,6 +848,14 @@
 
             // Initialize participate button
             initializeParticipateButton(event);
+
+            // Initialize reviews section
+            initializeReviewsSection(event);
+
+            // Initialize tabs after content is loaded
+            setTimeout(() => {
+                initializeTabs();
+            }, 100);
         } else {
             document.getElementById('event-detail-content').innerHTML = `
                 <div style="text-align: center; padding: 60px 20px;">
@@ -585,7 +885,22 @@
             return event.capacity.current + participants.length;
         }
 
-        function setParticipateButtonUi(participateBtn, { isLoggedIn, isParticipated, current, total }) {
+        function isPastEventDay(eventDateStr) {
+            const [y, m, d] = eventDateStr.split('-').map(Number);
+            const eventDay = new Date(y, m - 1, d);
+            eventDay.setHours(0, 0, 0, 0);
+            const todayLocal = new Date();
+            todayLocal.setHours(0, 0, 0, 0);
+            return eventDay < todayLocal;
+        }
+
+        function setParticipateButtonUi(participateBtn, { isLoggedIn, isParticipated, current, total, isPast }) {
+            if (isPast) {
+                participateBtn.disabled = true;
+                participateBtn.classList.remove('participated');
+                participateBtn.textContent = 'Ended';
+                return;
+            }
             if (current >= total && !isParticipated) {
                 participateBtn.disabled = true;
                 participateBtn.classList.remove('participated');
@@ -631,6 +946,7 @@
                 isParticipated = participants.some(p => p.id === user.id);
             }
             
+            // Calculate displayed capacity (데모 이벤트는 항상 마감 인원으로 표시)
             const displayedCurrent = getDisplayCapacityCurrent(event, participants);
             
             // Update capacity display
@@ -640,7 +956,8 @@
                 isLoggedIn,
                 isParticipated,
                 current: displayedCurrent,
-                total: event.capacity.total
+                total: event.capacity.total,
+                isPast: isPastEventDay(event.date)
             });
 
             // Render participants on load
@@ -660,7 +977,8 @@
                     isLoggedIn,
                     isParticipated: newIsParticipated,
                     current: newCurrent,
-                    total: event.capacity.total
+                    total: event.capacity.total,
+                    isPast: isPastEventDay(event.date)
                 });
                 
                 // Trigger custom event to update main page
@@ -671,6 +989,9 @@
 
             // Add click event
             participateBtn.addEventListener('click', async function() {
+                if (isPastEventDay(event.date)) {
+                    return;
+                }
                 // Get current user info
                 const userInfoClick = localStorage.getItem('kakao_user');
                 if (!userInfoClick) {
@@ -706,7 +1027,8 @@
                                 isLoggedIn: true,
                                 isParticipated: participated,
                                 current: cur,
-                                total: event.capacity.total
+                                total: event.capacity.total,
+                                isPast: isPastEventDay(event.date)
                             });
                             return;
                         }
@@ -725,7 +1047,8 @@
                         isLoggedIn: true,
                         isParticipated: participated,
                         current: cur,
-                        total: event.capacity.total
+                        total: event.capacity.total,
+                        isPast: isPastEventDay(event.date)
                     });
                 }
             });
@@ -848,6 +1171,279 @@
                     moreBtn.textContent = '접기';
                 }
             }
+        }
+
+        // Reviews Section Functions
+        async function initializeReviewsSection(event) {
+            const reviewsSection = document.getElementById('reviews-section');
+            if (!reviewsSection) return;
+
+            // Check if user is logged in
+            const userInfo = localStorage.getItem('kakao_user');
+            const isLoggedIn = !!userInfo;
+            const user = isLoggedIn ? JSON.parse(userInfo) : null;
+
+            // Check if user is a participant
+            let participants = [];
+            try {
+                participants = await EventParticipants.getParticipants(event.id);
+            } catch (error) {
+                console.error('Error loading participants:', error);
+            }
+
+            const isParticipant = user ? participants.some(p => p.id === user.id) : false;
+
+            // Load existing reviews
+            let reviews = [];
+            try {
+                reviews = await EventReviews.getReviews(event.id);
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+
+            // Find user's existing review
+            const userReview = user ? reviews.find(r => r.userId === user.id) : null;
+
+            // Render reviews section
+            renderReviewsSection(event, reviews, isLoggedIn, isParticipant, userReview, user);
+
+            // Subscribe to real-time updates
+            const unsubscribe = EventReviews.subscribeToReviews(event.id, (updatedReviews) => {
+                const updatedUserReview = user ? updatedReviews.find(r => r.userId === user.id) : null;
+                renderReviewsSection(event, updatedReviews, isLoggedIn, isParticipant, updatedUserReview, user);
+            });
+        }
+
+        function renderReviewsSection(event, reviews, isLoggedIn, isParticipant, userReview, user) {
+            const reviewsSection = document.getElementById('reviews-section');
+            if (!reviewsSection) return;
+
+            // Sort reviews by timestamp (newest first)
+            const sortedReviews = [...reviews].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+
+            let reviewsHTML = '';
+
+            // Review form (only for logged-in participants) - shown first
+            if (isLoggedIn && isParticipant) {
+                const currentComment = userReview ? userReview.comment : '';
+                const isAnonymous = userReview ? userReview.isAnonymous : false;
+                
+                reviewsHTML += `
+                    <div class="review-form">
+                        <form id="review-form">
+                            <div class="review-anonymity-option">
+                                <label>
+                                    <input type="radio" name="anonymity" value="real" ${!isAnonymous ? 'checked' : ''}>
+                                    본인 이름으로
+                                </label>
+                                <label>
+                                    <input type="radio" name="anonymity" value="anonymous" ${isAnonymous ? 'checked' : ''}>
+                                    익명으로
+                                </label>
+                            </div>
+                            <textarea 
+                                id="review-comment" 
+                                class="review-textarea" 
+                                placeholder="이벤트에 대한 리뷰를 작성해주세요..."
+                                required>${currentComment}</textarea>
+                            <button type="submit" class="review-submit-btn">${userReview ? '리뷰 수정' : '리뷰 등록'}</button>
+                        </form>
+                    </div>
+                `;
+            } else if (!isLoggedIn) {
+                reviewsHTML += `
+                    <div class="review-login-prompt">
+                        리뷰를 작성하려면 로그인하고 이벤트에 참여해주세요.
+                    </div>
+                `;
+            } else if (!isParticipant) {
+                reviewsHTML += `
+                    <div class="review-login-prompt">
+                        이벤트에 참여한 후 리뷰를 작성할 수 있습니다.
+                    </div>
+                `;
+            }
+
+            // Reviews list - shown below the form
+            reviewsHTML += '<div style="margin-top: 40px;">';
+            
+            if (sortedReviews.length === 0) {
+                reviewsHTML += '<div class="no-reviews">아직 작성된 리뷰가 없습니다.</div>';
+            } else {
+                reviewsHTML += '<div class="reviews-list">';
+                sortedReviews.forEach(review => {
+                    const reviewDate = new Date(review.timestamp);
+                    const formattedDate = `${reviewDate.getFullYear()}.${String(reviewDate.getMonth() + 1).padStart(2, '0')}.${String(reviewDate.getDate()).padStart(2, '0')}`;
+                    const isAnonymous = review.isAnonymous || false;
+                    const displayNickname = review.nickname || '익명';
+
+                    reviewsHTML += `
+                        <div class="review-item">
+                            <div class="review-header">
+                                ${!isAnonymous ? `
+                                <img src="${review.profile_image || 'https://via.placeholder.com/45'}" 
+                                     alt="${displayNickname}" 
+                                     class="reviewer-avatar"
+                                     onerror="this.src='https://via.placeholder.com/45'">
+                                ` : `
+                                <div class="reviewer-avatar" style="background-color: #e0e0e0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 20px;">👤</div>
+                                `}
+                                <div class="reviewer-info">
+                                    <div class="reviewer-name">${displayNickname}</div>
+                                    <div class="review-date">${formattedDate}</div>
+                                </div>
+                            </div>
+                            <div class="review-content">${review.comment}</div>
+                        </div>
+                    `;
+                });
+                reviewsHTML += '</div>';
+            }
+            reviewsHTML += '</div>';
+
+            reviewsSection.innerHTML = reviewsHTML;
+
+            // Re-attach event listener for review form after rendering
+            if (isLoggedIn && isParticipant && user) {
+                const reviewForm = document.getElementById('review-form');
+                if (reviewForm) {
+                    // Remove existing listeners by cloning the form
+                    const newForm = reviewForm.cloneNode(true);
+                    reviewForm.parentNode.replaceChild(newForm, reviewForm);
+                    
+                    // Add event listener to the new form
+                    newForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        await handleReviewSubmit(event, user);
+                    });
+                }
+            }
+        }
+
+        // Generate cute random nickname for anonymous reviews
+        function generateRandomNickname() {
+            const adjectives = [
+                '귀여운', '달콤한', '행복한', '즐거운', '사랑스러운', '멋진', '예쁜', '깜찍한',
+                '상냥한', '밝은', '따뜻한', '신나는', '활발한', '친근한', '부드러운', '따스한',
+                '화사한', '산뜻한', '포근한', '향기로운', '반짝이는', '신비로운', '아늑한', '편안한'
+            ];
+            const nouns = [
+                '강아지', '고양이', '토끼', '곰돌이', '펭귄', '다람쥐', '햄스터', '판다',
+                '여우', '사슴', '펭귄', '오리', '참새', '비둘기', '나비', '벌',
+                '별', '달', '구름', '꽃', '나무', '잎', '열매', '씨앗',
+                '버블', '하트', '별똥별', '무지개', '햇살', '달빛', '별빛', '이슬'
+            ];
+            
+            const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+            const randomNumber = Math.floor(Math.random() * 1000);
+            
+            return `${randomAdjective}${randomNoun}${randomNumber}`;
+        }
+
+        async function handleReviewSubmit(event, user) {
+            const commentInput = document.getElementById('review-comment');
+            const anonymityInput = document.querySelector('input[name="anonymity"]:checked');
+            const submitBtn = document.querySelector('.review-submit-btn');
+
+            if (!commentInput || !commentInput.value.trim()) {
+                alert('리뷰 내용을 입력해주세요.');
+                return;
+            }
+
+            if (!anonymityInput) {
+                alert('이름 표시 방식을 선택해주세요.');
+                return;
+            }
+
+            const comment = commentInput.value.trim();
+            const isAnonymous = anonymityInput.value === 'anonymous';
+
+            // Disable button during submission
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '처리 중...';
+            }
+
+            try {
+                // Check if user already has a review
+                const existingReviews = await EventReviews.getReviews(event.id);
+                const existingReview = existingReviews.find(r => r.userId === user.id);
+                const isUpdate = !!existingReview;
+
+                // Determine display nickname
+                let finalNickname = user.nickname;
+                if (isAnonymous) {
+                    if (isUpdate && existingReview.isAnonymous) {
+                        // Keep the same anonymous nickname if still anonymous
+                        finalNickname = existingReview.nickname;
+                    } else {
+                        // Generate new random nickname for new anonymous review or when changing to anonymous
+                        finalNickname = generateRandomNickname();
+                    }
+                }
+
+                await EventReviews.addReview(event.id, user, comment, isAnonymous, finalNickname);
+                
+                // Clear form only if it's a new review
+                if (!isUpdate) {
+                    commentInput.value = '';
+                }
+                
+                alert(isUpdate ? '리뷰가 수정되었습니다.' : '리뷰가 등록되었습니다.');
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                alert(error.message || '리뷰 등록 중 오류가 발생했습니다.');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    // The button text will be updated when reviews are re-rendered
+                }
+            }
+        }
+
+        // Tab functionality
+        function initializeTabs() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            if (tabButtons.length === 0 || tabContents.length === 0) {
+                console.warn('Tabs not found');
+                return;
+            }
+
+            tabButtons.forEach(button => {
+                // Remove existing listeners by cloning
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+                
+                newButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetTab = newButton.getAttribute('data-tab');
+
+                    // Remove active class from all buttons and contents
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked button and corresponding content
+                    newButton.classList.add('active');
+                    const targetContent = document.getElementById(`tab-${targetTab}`);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Initialize tabs when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(initializeTabs, 100);
+            });
+        } else {
+            setTimeout(initializeTabs, 100);
         }
     </script>
 </body>
