@@ -13,17 +13,22 @@ const firebaseConfig = {
 // Note: Firebase SDK will be loaded from CDN in HTML
 let db = null;
 
-/** 카카오 birthyear(4자리) 기준 연령대 — 참가자 통계용 */
-function participantAgeGroupFromUser(user) {
-    const by = user && user.birthyear;
-    if (!by) return '미입력';
-    const y = parseInt(String(by), 10);
+/** 출생년도(4자리) 기준 연령대 — 참가자 통계용 */
+function participantAgeGroupFromBirthYear(birthYear) {
+    const y = parseInt(String(birthYear), 10);
     if (isNaN(y)) return '미입력';
     const age = new Date().getFullYear() - y;
     if (age < 30) return '20대';
     if (age < 40) return '30대';
     if (age < 50) return '40대';
     return '50대+';
+}
+
+/** 카카오 birthyear(4자리) 기준 연령대 — 참가자 통계용 */
+function participantAgeGroupFromUser(user) {
+    const by = user && user.birthyear;
+    if (!by) return '미입력';
+    return participantAgeGroupFromBirthYear(by);
 }
 
 // Initialize Firestore
@@ -61,13 +66,13 @@ const EventParticipants = {
         }
     },
 
-    // Add participant to an event
-    async addParticipant(eventId, user) {
+    // Add participant to an event (application: 참가 신청서 응답)
+    async addParticipant(eventId, user, application = null) {
         if (!db) {
             initFirebase();
             if (!db) {
                 console.warn('Firebase not initialized, using localStorage fallback');
-                return this.addParticipantToLocalStorage(eventId, user);
+                return this.addParticipantToLocalStorage(eventId, user, application);
             }
         }
 
@@ -86,14 +91,31 @@ const EventParticipants = {
                 throw new Error('이미 참여한 이벤트입니다.');
             }
 
-            // Add participant (프로필 사진 미저장 — 성별·연령대만 통계용 저장)
-            participants.push({
+            const gender = (application && application.gender) || user.gender || '';
+            const ageGroup = application && application.birthYear
+                ? participantAgeGroupFromBirthYear(application.birthYear)
+                : participantAgeGroupFromUser(user);
+
+            const participant = {
                 id: user.id,
                 nickname: user.nickname,
-                gender: user.gender || '',
-                ageGroup: participantAgeGroupFromUser(user),
-                timestamp: new Date().toISOString() // Use ISO string instead of serverTimestamp in array
-            });
+                gender,
+                ageGroup,
+                timestamp: new Date().toISOString()
+            };
+
+            if (application) {
+                participant.application = {
+                    realName: application.realName,
+                    birthYear: application.birthYear,
+                    phone: application.phone,
+                    companionName: application.companionName || '',
+                    message: application.message || '',
+                    submittedAt: new Date().toISOString()
+                };
+            }
+
+            participants.push(participant);
 
             await eventRef.set({
                 participants: participants,
@@ -101,7 +123,7 @@ const EventParticipants = {
             }, { merge: true });
 
             // Also update localStorage as fallback
-            this.addParticipantToLocalStorage(eventId, user);
+            this.addParticipantToLocalStorage(eventId, user, application);
 
             return participants;
         } catch (error) {
@@ -183,19 +205,41 @@ const EventParticipants = {
         return data ? JSON.parse(data) : [];
     },
 
-    addParticipantToLocalStorage(eventId, user) {
+    addParticipantToLocalStorage(eventId, user, application = null) {
         const key = `event_participants_${eventId}`;
         let participants = this.getParticipantsFromLocalStorage(eventId);
         
         if (!participants.some(p => p.id === user.id)) {
-            participants.push({
+            const gender = (application && application.gender) || user.gender || '';
+            const ageGroup = application && application.birthYear
+                ? participantAgeGroupFromBirthYear(application.birthYear)
+                : participantAgeGroupFromUser(user);
+
+            const participant = {
                 id: user.id,
                 nickname: user.nickname,
-                gender: user.gender || '',
-                ageGroup: participantAgeGroupFromUser(user),
+                gender,
+                ageGroup,
                 timestamp: new Date().toISOString()
-            });
+            };
+
+            if (application) {
+                participant.application = {
+                    realName: application.realName,
+                    birthYear: application.birthYear,
+                    phone: application.phone,
+                    companionName: application.companionName || '',
+                    message: application.message || '',
+                    submittedAt: new Date().toISOString()
+                };
+            }
+
+            participants.push(participant);
             localStorage.setItem(key, JSON.stringify(participants));
+
+            if (application && typeof GoogleSheetsSync !== 'undefined') {
+                GoogleSheetsSync.pushRegistration(eventId, user, participant.application);
+            }
         }
         
         return participants;

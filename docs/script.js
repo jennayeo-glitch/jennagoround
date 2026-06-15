@@ -79,7 +79,7 @@ function renderEvents(filterCategory = 'all') {
 
         // Add click event to navigate to detail page
         eventCard.addEventListener('click', function() {
-            if ([1, 9, 10].includes(event.id)) {
+            if ([1, 9, 10, 11].includes(event.id)) {
                 window.location.href = `event-detail.html?id=${event.id}`;
             } else {
                 alert('상세페이지 준비중입니다.');

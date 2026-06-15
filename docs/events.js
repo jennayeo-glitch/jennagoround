@@ -2,7 +2,25 @@
 // meetupType: 지도 필터 — 'networking' | 'gathering' | 'small-group' (네트워킹 · 게더링 · 소모임)
 // kakaoChatUrl: 카카오 오픈채팅 등 링크 — 비어 있으면 톡방 버튼은 보이지만 비활성(링크 넣으면 활성)
 // demoParticipants: 상세 통계용 가상 참가자 — 있으면 성별·연령 막대에만 사용, 모집인원은 capacity 기준
+// registrationOpen: true — Smore 스타일 참가신청서 사용
 const eventsData = [
+    {
+        id: 11,
+        date: '2026-06-19',
+        displayDate: '2026.06.19',
+        location: '서울',
+        meetupType: 'networking',
+        image: 'img/event/260619_finding_nangman.png',
+        alt: 'FINDING NANGMAN',
+        title: 'FINDING NANGMAN',
+        description:
+            '로테이션 소개팅에 낭만 한 스푼\n\n처음 보는 사람인데\n괜히 웃음이 나는 순간이 있잖아요.\n그게 오늘 밤일 수도 있어요 😊',
+        capacity: { current: 0, total: 40 },
+        status: 'Available',
+        category: 'regular gathering',
+        kakaoChatUrl: '',
+        registrationOpen: true
+    },
     {
         id: 10,
         date: '2026-06-13',
@@ -17,7 +35,8 @@ const eventsData = [
         capacity: { current: 0, total: 24 },
         status: 'Available',
         category: 'regular gathering',
-        kakaoChatUrl: ''
+        kakaoChatUrl: '',
+        registrationOpen: true
     },
     {
         id: 9,

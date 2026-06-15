@@ -2,7 +2,42 @@
 // meetupType: 지도 필터 — 'networking' | 'gathering' | 'small-group' (네트워킹 · 게더링 · 소모임)
 // kakaoChatUrl: 카카오 오픈채팅 등 링크 — 비어 있으면 톡방 버튼은 보이지만 비활성(링크 넣으면 활성)
 // demoParticipants: 상세 통계용 가상 참가자 — 있으면 성별·연령 막대에만 사용, 모집인원은 capacity 기준
+// registrationOpen: true — Smore 스타일 참가신청서 사용
 const eventsData = [
+    {
+        id: 11,
+        date: '2026-06-19',
+        displayDate: '2026.06.19',
+        location: '서울',
+        meetupType: 'networking',
+        image: 'img/event/260619_finding_nangman.png',
+        alt: 'FINDING NANGMAN',
+        title: 'FINDING NANGMAN',
+        description:
+            '로테이션 소개팅에 낭만 한 스푼\n\n처음 보는 사람인데\n괜히 웃음이 나는 순간이 있잖아요.\n그게 오늘 밤일 수도 있어요 😊',
+        capacity: { current: 0, total: 40 },
+        status: 'Available',
+        category: 'regular gathering',
+        kakaoChatUrl: '',
+        registrationOpen: true
+    },
+    {
+        id: 10,
+        date: '2026-06-13',
+        displayDate: '2026.06.13',
+        location: '서울 용산구',
+        meetupType: 'gathering',
+        image: 'img/event/260613_smc.png',
+        alt: 'SMC Saturday Morning Crochet',
+        title: 'SMC (Saturday Morning Crochet)',
+        description:
+            'Welcome to Saturday Morning Crochet\n안녕하세요 😊\n\n혼자 뜨개질하다가 어느새 셋이 모여 뜨개질을 하고있어요\n이 따뜻한 취미를 더 많은 분들과 함께 나누고 싶어 이번 이벤트를 열게 되었습니다 🧶✨\n\n뜨개질이 처음이어도 괜찮아요!\n그냥 관심만 있어도 충분합니다 ☺️\n\n이번 모임은 미국인 친구들과 함께 진행하는 소셜링 모임이라\n영어와 한국어를 자연스럽게 섞어 대화하며\n언어 교환과 문화 교류도 함께 즐길 수 있어요! (두근)\n\n각자의 진행하시던 작업물을 가져와도 좋고,\n가볍게 빈손으로 오셔도 괜찮아요!\n\n실과 바늘은 저희가 준비해둘게요 🙂',
+        capacity: { current: 0, total: 24 },
+        status: 'Available',
+        category: 'regular gathering',
+        kakaoChatUrl: '',
+        registrationOpen: true
+    },
     {
         id: 9,
         date: '2026-04-04',

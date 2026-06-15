@@ -6,20 +6,22 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "postbuild": "cp events.js city-events.js city-events-api.js map.js script.js auth.js firebase.js styles.css plan.html config.js google-sheets-sync.js registration-form.js registration-form.css docs/ && cp -r img docs/",
+    "preview": "vite preview",
+    "deploy": "npm run build && git add docs && git commit -m 'deploy: sync docs' && git push",
+    "fetch-events": "node scripts/fetch-events.js"
   },
-  "keywords": ["party", "planner", "landing-page"],
+  "type": "module",
+  "keywords": [
+    "party",
+    "planner",
+    "landing-page"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "dotenv": "^17.4.2",
+    "fast-xml-parser": "^5.6.0",
     "vite": "^5.0.0"
   }
 }
-
-
-
-
-
-
-
-

@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이벤트 플래닝 — jennagoround</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ── Layout ──────────────────────────────────────────────────────── */
+        .plan-page { min-height: 100vh; background: var(--bg-light); }
+
+        .plan-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        .plan-view { display: none; }
+        .plan-view.active { display: block; }
+
+        /* ── Progress bar ────────────────────────────────────────────────── */
+        .wizard-progress {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 40px;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-light-gray);
+        }
+
+        .progress-step.active { color: #111; }
+        .progress-step.done { color: #10b981; }
+
+        .progress-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .progress-step.done .progress-num {
+            background: #10b981;
+            border-color: #10b981;
+            color: #fff;
+        }
+
+        .progress-step.done .progress-num::after { content: '✓'; }
+        .progress-step.done .progress-num span { display: none; }
+
+        .progress-line {
+            flex: 1;
+            height: 2px;
+            background: var(--border-color);
+            margin: 0 10px;
+        }
+
+        .progress-line.done { background: #10b981; }
+
+        /* ── Section heading ─────────────────────────────────────────────── */
+        .plan-section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 6px;
+        }
+
+        .plan-section-sub {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 32px;
+        }
+
+        /* ── Dashboard ───────────────────────────────────────────────────── */
+        .dashboard-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .dashboard-greeting { font-size: 14px; color: var(--text-gray); margin-top: 4px; }
+
+        .btn-create {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 11px 20px;
+            background: #111;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-create:hover { opacity: 0.8; }
+
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-light-gray);
+            margin-bottom: 6px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-sub { font-size: 11px; color: var(--text-gray); }
+
+        /* ── Event list ──────────────────────────────────────────────────── */
+        .section-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-gray);
+            margin-bottom: 12px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .event-cards { display: flex; flex-direction: column; gap: 12px; }
+
+        .event-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: box-shadow 0.15s, border-color 0.15s;
+        }
+
+        .event-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-color: #bbb; }
+
+        .event-card-left { flex: 1; min-width: 0; }
+
+        .event-card-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 999px;
+            margin-bottom: 8px;
+        }
+
+        .event-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 4px;
+        }
+
+        .event-card-meta {
+            font-size: 12px;
+            color: var(--text-gray);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .event-card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+        .event-card-dday {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #374151;
+            white-space: nowrap;
+        }
+
+        .event-card-progress {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .progress-bar-wrap {
+            width: 100px;
+            height: 5px;
+            background: #e5e7eb;
+            border-radius: 9px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 9px;
+            background: #111;
+            transition: width 0.3s;
+        }
+
+        .progress-text { font-size: 11px; color: var(--text-gray); }
+
+        /* ── Type selection ──────────────────────────────────────────────── */
+        .type-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .type-card {
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            padding: 22px 20px;
+            cursor: pointer;
+            background: #fff;
+            transition: all 0.18s;
+            text-align: left;
+        }
+
+        .type-card:hover { border-color: #aaa; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+
+        .type-card.selected { border-width: 2.5px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+
+        .type-card-icon { font-size: 32px; margin-bottom: 10px; line-height: 1; }
+        .type-card-name { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 6px; }
+        .type-card-desc { font-size: 12px; color: var(--text-gray); line-height: 1.5; }
+
+        .type-card-features {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .type-tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* ── Sub-type selector ───────────────────────────────────────────── */
+        .subtype-panel {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px 22px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .subtype-panel.visible { display: block; animation: fadeSlideIn 0.2s ease; }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .subtype-label { font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 12px; letter-spacing: 0.04em; }
+
+        .subtype-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .subtype-btn {
+            padding: 10px 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            background: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+            text-align: center;
+        }
+
+        .subtype-btn:hover { border-color: #aaa; color: #111; }
+        .subtype-btn.selected { color: #fff; border-color: transparent; }
+
+        /* ── Options section ─────────────────────────────────────────────── */
+        .options-section {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px 22px;
+            margin-bottom: 28px;
+        }
+
+        .options-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 16px;
+        }
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            gap: 16px;
+        }
+
+        .option-row:last-child { border-bottom: none; }
+
+        .option-info { flex: 1; }
+        .option-name { font-size: 13px; font-weight: 600; color: #111; }
+        .option-desc { font-size: 11px; color: var(--text-gray); margin-top: 2px; }
+
+        .option-control { flex-shrink: 0; }
+
+        /* Toggle switch */
+        .toggle {
+            position: relative;
+            width: 40px;
+            height: 22px;
+        }
+
+        .toggle input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-track {
+            position: absolute;
+            inset: 0;
+            background: #e5e7eb;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle-track::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .toggle input:checked + .toggle-track { background: #111; }
+        .toggle input:checked + .toggle-track::after { transform: translateX(18px); }
+
+        /* Radio group */
+        .radio-group { display: flex; gap: 6px; }
+
+        .radio-btn {
+            padding: 5px 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 999px;
+            background: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .radio-btn.active { background: #111; color: #fff; border-color: #111; }
+
+        /* ── Form section ────────────────────────────────────────────────── */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full { grid-column: 1 / -1; }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            padding: 10px 13px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 9px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #111;
+            background: #fff;
+            outline: none;
+            transition: border-color 0.15s;
+            width: 100%;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: #888; }
+
+        .form-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+        .form-hint { font-size: 11px; color: var(--text-light-gray); }
+
+        /* ── Poster generator ───────────────────────────────────────────── */
+        .poster-gen-section {
+            background: linear-gradient(135deg, #f5f0ff 0%, #fff0f8 100%);
+            border: 1px solid #e0d5f5;
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+
+        .poster-gen-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .poster-gen-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #6b21a8;
+        }
+
+        .poster-gen-sub {
+            font-size: 12px;
+            color: #9061d0;
+            margin-top: 3px;
+        }
+
+        .btn-gen-poster {
+            flex-shrink: 0;
+            background: #7c3aed;
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .15s, transform .1s;
+        }
+
+        .btn-gen-poster:hover { background: #6d28d9; }
+        .btn-gen-poster:active { transform: scale(.97); }
+        .btn-gen-poster:disabled { background: #c4b5fd; cursor: not-allowed; }
+
+        /* ── Poster modal ────────────────────────────────────────────────── */
+        .poster-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .poster-modal-overlay.open { display: flex; }
+
+        .poster-modal {
+            background: #fff;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 560px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,.18);
+        }
+
+        .poster-modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .poster-modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111;
+        }
+
+        .poster-modal-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: var(--text-gray);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            line-height: 1;
+        }
+
+        .poster-modal-close:hover { background: var(--bg-light); }
+
+        .poster-modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .poster-copy-block {
+            margin-bottom: 16px;
+        }
+
+        .poster-copy-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #7c3aed;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 6px;
+        }
+
+        .poster-copy-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            background: #faf9ff;
+            border: 1px solid #e0d5f5;
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+
+        .poster-copy-text {
+            flex: 1;
+            font-size: 14px;
+            color: #111;
+            line-height: 1.55;
+            word-break: keep-all;
+        }
+
+        .btn-copy {
+            flex-shrink: 0;
+            background: none;
+            border: 1px solid #d1c4e9;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #7c3aed;
+            cursor: pointer;
+            transition: background .12s;
+            white-space: nowrap;
+        }
+
+        .btn-copy:hover { background: #f3e8ff; }
+        .btn-copy.copied { background: #d1fae5; border-color: #6ee7b7; color: #059669; }
+
+        .poster-modal-footer {
+            padding: 16px 24px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-canva {
+            display: inline-flex;
+            align-items: center;
+            background: #00C4CC;
+            color: #fff;
+            border-radius: 9px;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background .15s;
+            white-space: nowrap;
+        }
+
+        .btn-canva:hover { background: #00adb5; }
+
+        .poster-modal-hint {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .poster-loading {
+            text-align: center;
+            padding: 32px 0;
+            color: var(--text-gray);
+            font-size: 14px;
+        }
+
+        .poster-loading-dots::after {
+            content: '';
+            animation: dots 1.2s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%   { content: ''; }
+            25%  { content: '.'; }
+            50%  { content: '..'; }
+            75%  { content: '...'; }
+        }
+
+        /* ── Budget planner ──────────────────────────────────────────────── */
+        .budget-section {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .budget-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #111;
+        }
+
+        .btn-add-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 7px 13px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            background: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .btn-add-item:hover { border-color: #aaa; color: #111; }
+
+        .budget-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+
+        .budget-table th {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-gray);
+            text-align: left;
+            padding: 0 8px 10px;
+            border-bottom: 1px solid var(--border-color);
+            letter-spacing: 0.03em;
+        }
+
+        .budget-table th:last-child { text-align: right; }
+
+        .budget-row td { padding: 8px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+
+        .budget-row input, .budget-row select {
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 5px 8px;
+            font-size: 12px;
+            font-family: inherit;
+            color: #111;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .budget-row input:focus, .budget-row select:focus {
+            border-color: var(--border-color);
+            background: #f9fafb;
+        }
+
+        .budget-row .amount-cell { text-align: right; }
+
+        .budget-row .amount-cell input { text-align: right; }
+
+        .btn-del {
+            width: 22px;
+            height: 22px;
+            border: none;
+            background: transparent;
+            color: #d1d5db;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.15s, background 0.15s;
+            font-family: inherit;
+        }
+
+        .btn-del:hover { color: #ef4444; background: #fee2e2; }
+
+        /* ── P&L Summary ─────────────────────────────────────────────────── */
+        .pnl-box {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+
+        .pnl-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+
+        .pnl-row-label { color: var(--text-gray); }
+        .pnl-row-value { font-weight: 600; color: #111; }
+        .pnl-divider { border: none; border-top: 1px solid var(--border-color); margin: 8px 0; }
+
+        .pnl-result {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0 0;
+        }
+
+        .pnl-result-label { font-size: 14px; font-weight: 700; color: #111; }
+
+        .pnl-result-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .pnl-result-value.positive { color: #10b981; }
+        .pnl-result-value.negative { color: #ef4444; }
+        .pnl-result-value.zero { color: #f59e0b; }
+
+        .breakeven-box {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .breakeven-box.need-more { background: #fffbeb; color: #92400e; }
+        .breakeven-box.covered { background: #ecfdf5; color: #065f46; }
+
+        /* ── Ticket setup ────────────────────────────────────────────────── */
+        .ticket-section {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+
+        .ticket-grid { display: flex; flex-direction: column; gap: 10px; }
+
+        .ticket-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* ── Action bar ──────────────────────────────────────────────────── */
+        .wizard-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn-back {
+            padding: 11px 20px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .btn-back:hover { border-color: #888; color: #111; }
+
+        .btn-next, .btn-submit {
+            padding: 11px 28px;
+            border: none;
+            border-radius: 10px;
+            background: #111;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.15s;
+        }
+
+        .btn-next:hover, .btn-submit:hover { opacity: 0.75; }
+        .btn-next:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .btn-submit { background: #10b981; }
+
+        /* ── Success view ────────────────────────────────────────────────── */
+        .success-wrap {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .success-icon { font-size: 56px; margin-bottom: 20px; }
+        .success-title { font-size: 24px; font-weight: 700; color: #111; margin-bottom: 10px; }
+        .success-desc { font-size: 14px; color: var(--text-gray); line-height: 1.7; margin-bottom: 32px; }
+
+        .success-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .btn-outline {
+            padding: 11px 22px;
+            border: 1.5px solid #111;
+            border-radius: 10px;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            color: #111;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .btn-outline:hover { background: #111; color: #fff; }
+
+        /* ── Responsive ──────────────────────────────────────────────────── */
+        @media (max-width: 700px) {
+            .plan-container { padding: 24px 16px 60px; }
+
+            .stat-cards { grid-template-columns: 1fr 1fr; }
+
+            .type-cards { grid-template-columns: 1fr; }
+
+            .subtype-grid { grid-template-columns: 1fr 1fr; }
+
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full { grid-column: 1; }
+
+            .ticket-row { grid-template-columns: 1fr 1fr; }
+            .ticket-row > *:nth-child(3) { display: none; }
+
+            .event-card { flex-direction: column; align-items: flex-start; }
+            .event-card-right { flex-direction: row; align-items: center; }
+        }
+    </style>
+</head>
+<body class="plan-page">
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none;display:flex;align-items:center">
+                    <img src="img/logo/jennagoround_logo.png" alt="ppl person" class="logo-image">
+                </a>
+            </div>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link">서비스</a>
+                <a href="map.html" class="nav-link">이벤트 지도</a>
+                <a href="plan.html" class="nav-link active">플래닝</a>
+                <a href="index.html" class="nav-link">문의하기</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="plan-page">
+    <div class="plan-container">
+
+        <!-- ── VIEW: Dashboard ──────────────────────────────────────── -->
+        <div id="view-dashboard" class="plan-view active">
+            <div class="dashboard-top">
+                <div>
+                    <div class="plan-section-title">내 이벤트</div>
+                    <div class="dashboard-greeting">기획부터 사후관리까지 한 곳에서</div>
+                </div>
+                <button class="btn-create" id="btn-create-event">＋ 이벤트 만들기</button>
+            </div>
+
+            <div class="stat-cards">
+                <div class="stat-card">
+                    <div class="stat-label">예정된 이벤트</div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-sub">다음 달까지</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">총 신청자</div>
+                    <div class="stat-value">26</div>
+                    <div class="stat-sub">2개 이벤트 합산</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">예상 수익</div>
+                    <div class="stat-value">418K</div>
+                    <div class="stat-sub">수수료 전</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">가장 가까운 D-day</div>
+                    <div class="stat-value" id="dday-value">—</div>
+                    <div class="stat-sub">봄 네트워킹 파티</div>
+                </div>
+            </div>
+
+            <div class="section-label">진행 예정</div>
+            <div class="event-cards">
+                <div class="event-card">
+                    <div class="event-card-left">
+                        <div class="event-card-badge" style="background:#ec4899">🎉 모임·파티</div>
+                        <div class="event-card-title">봄 네트워킹 파티</div>
+                        <div class="event-card-meta">
+                            <span>📍 성수동 카페 오프닝</span>
+                            <span id="party-date">📅 —</span>
+                            <span>👤 최대 30명</span>
+                        </div>
+                    </div>
+                    <div class="event-card-right">
+                        <span class="event-card-dday" id="party-dday">D-?</span>
+                        <div class="event-card-progress">
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar-fill" style="width:60%"></div>
+                            </div>
+                            <span class="progress-text">18 / 30명</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-card">
+                    <div class="event-card-left">
+                        <div class="event-card-badge" style="background:#3b82f6">📚 원데이 클래스</div>
+                        <div class="event-card-title">향수 만들기 원데이 클래스</div>
+                        <div class="event-card-meta">
+                            <span>📍 합정 아틀리에</span>
+                            <span id="class-date">📅 —</span>
+                            <span>👤 최대 12명</span>
+                        </div>
+                    </div>
+                    <div class="event-card-right">
+                        <span class="event-card-dday" id="class-dday">D-?</span>
+                        <div class="event-card-progress">
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar-fill" style="width:67%"></div>
+                            </div>
+                            <span class="progress-text">8 / 12명</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── VIEW: Step 1 — 유형 선택 ─────────────────────────────── -->
+        <div id="view-type-select" class="plan-view">
+            <div class="wizard-progress">
+                <div class="progress-step active" id="ps-1">
+                    <div class="progress-num"><span>1</span></div>
+                    <span>유형 선택</span>
+                </div>
+                <div class="progress-line" id="pl-1"></div>
+                <div class="progress-step" id="ps-2">
+                    <div class="progress-num"><span>2</span></div>
+                    <span>기본 정보</span>
+                </div>
+                <div class="progress-line" id="pl-2"></div>
+                <div class="progress-step" id="ps-3">
+                    <div class="progress-num"><span>3</span></div>
+                    <span>예산 플래너</span>
+                </div>
+                <div class="progress-line" id="pl-3"></div>
+                <div class="progress-step" id="ps-4">
+                    <div class="progress-num"><span>4</span></div>
+                    <span>완료</span>
+                </div>
+            </div>
+
+            <div class="plan-section-title">어떤 이벤트를 만드시나요?</div>
+            <div class="plan-section-sub">유형을 선택하면 이후 플래닝 과정이 맞춤화됩니다.</div>
+
+            <div class="type-cards">
+                <div class="type-card" data-type="gathering" onclick="selectType('gathering')">
+                    <div class="type-card-icon">🎉</div>
+                    <div class="type-card-name">모임 · 파티</div>
+                    <div class="type-card-desc">네트워킹, 테마 파티, 취미 동호회 등 사람들이 모이는 자리</div>
+                    <div class="type-card-features">
+                        <span class="type-tag">참가자 프로필</span>
+                        <span class="type-tag">QR 체크인</span>
+                        <span class="type-tag">그룹 티켓</span>
+                    </div>
+                </div>
+                <div class="type-card" data-type="class" onclick="selectType('class')">
+                    <div class="type-card-icon">📚</div>
+                    <div class="type-card-name">원데이 클래스</div>
+                    <div class="type-card-desc">핸즈온 워크숍, 강의, 소그룹 코칭, 자격증 대비</div>
+                    <div class="type-card-features">
+                        <span class="type-tag">커리큘럼</span>
+                        <span class="type-tag">준비물 안내</span>
+                        <span class="type-tag">수료증</span>
+                    </div>
+                </div>
+                <div class="type-card" data-type="popup" onclick="selectType('popup')">
+                    <div class="type-card-icon">🏪</div>
+                    <div class="type-card-name">팝업 · 전시</div>
+                    <div class="type-card-desc">브랜드 팝업스토어, 아트·사진 전시, 푸드 팝업</div>
+                    <div class="type-card-features">
+                        <span class="type-tag">타임슬롯</span>
+                        <span class="type-tag">무료 입장</span>
+                        <span class="type-tag">브랜드 로고</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-type panel (shows after type selected) -->
+            <div class="subtype-panel" id="subtype-panel">
+                <div class="subtype-label">세부 유형 선택</div>
+                <div class="subtype-grid" id="subtype-grid">
+                    <!-- rendered by JS -->
+                </div>
+            </div>
+
+            <!-- Common options -->
+            <div class="options-section">
+                <div class="options-title">이벤트 옵션</div>
+
+                <div class="option-row">
+                    <div class="option-info">
+                        <div class="option-name">참가 신청 방식</div>
+                        <div class="option-desc">참가자가 어떻게 신청하는지 설정합니다</div>
+                    </div>
+                    <div class="option-control">
+                        <div class="radio-group" id="reg-mode-group">
+                            <button class="radio-btn active" data-value="first_come" onclick="setRegMode(this)">선착순</button>
+                            <button class="radio-btn" data-value="host_approval" onclick="setRegMode(this)">호스트 승인</button>
+                            <button class="radio-btn" data-value="auto_approval" onclick="setRegMode(this)">자동 승인</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option-info">
+                        <div class="option-name">그룹 참여 허용</div>
+                        <div class="option-desc">2인 이상 묶음 신청을 허용합니다</div>
+                    </div>
+                    <div class="option-control">
+                        <label class="toggle">
+                            <input type="checkbox" id="opt-group" checked>
+                            <span class="toggle-track"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option-info">
+                        <div class="option-name">대기자 명단 운영</div>
+                        <div class="option-desc">정원 초과 시 대기자를 받습니다</div>
+                    </div>
+                    <div class="option-control">
+                        <label class="toggle">
+                            <input type="checkbox" id="opt-waitlist" checked>
+                            <span class="toggle-track"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option-info">
+                        <div class="option-name">성별·연령 제한</div>
+                        <div class="option-desc">특정 조건의 참가자만 신청 가능하도록 설정</div>
+                    </div>
+                    <div class="option-control">
+                        <label class="toggle">
+                            <input type="checkbox" id="opt-filter">
+                            <span class="toggle-track"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="option-row">
+                    <div class="option-info">
+                        <div class="option-name">정기 이벤트 반복</div>
+                        <div class="option-desc">같은 설정으로 반복 이벤트를 자동 생성합니다</div>
+                    </div>
+                    <div class="option-control">
+                        <label class="toggle">
+                            <input type="checkbox" id="opt-recurring">
+                            <span class="toggle-track"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wizard-actions">
+                <button class="btn-back" onclick="showView('dashboard')">← 취소</button>
+                <button class="btn-next" id="btn-to-step2" onclick="goToStep2()" disabled>기본 정보 입력 →</button>
+            </div>
+        </div>
+
+        <!-- ── VIEW: Step 2 — 기본 정보 + 예산 ──────────────────────── -->
+        <div id="view-form" class="plan-view">
+            <div class="wizard-progress">
+                <div class="progress-step done"><div class="progress-num"></div><span>유형 선택</span></div>
+                <div class="progress-line done"></div>
+                <div class="progress-step active"><div class="progress-num"><span>2</span></div><span>기본 정보</span></div>
+                <div class="progress-line"></div>
+                <div class="progress-step"><div class="progress-num"><span>3</span></div><span>예산 플래너</span></div>
+                <div class="progress-line"></div>
+                <div class="progress-step"><div class="progress-num"><span>4</span></div><span>완료</span></div>
+            </div>
+
+            <div class="plan-section-title">기본 정보를 입력해주세요</div>
+            <div class="plan-section-sub" id="form-sub-desc">이벤트의 이름, 날짜, 장소를 설정합니다.</div>
+
+            <div style="background:#fff;border:1px solid var(--border-color);border-radius:14px;padding:24px;margin-bottom:16px;">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label class="form-label">이벤트 이름</label>
+                        <input type="text" class="form-input" id="f-title" placeholder="예: 봄 네트워킹 파티">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">소개 한 줄</label>
+                        <input type="text" class="form-input" id="f-tagline" placeholder="참가자들이 처음 보는 한 줄 소개">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">상세 설명</label>
+                        <textarea class="form-textarea" id="f-desc" rows="3" placeholder="이벤트에 대해 자세히 설명해주세요"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background:#fff;border:1px solid var(--border-color);border-radius:14px;padding:24px;margin-bottom:16px;">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">날짜</label>
+                        <input type="date" class="form-input" id="f-date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">시간</label>
+                        <input type="time" class="form-input" id="f-time" value="19:00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">최대 정원</label>
+                        <input type="number" class="form-input" id="f-capacity" placeholder="20" min="1" max="9999">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">기본 티켓 가격 (원)</label>
+                        <input type="number" class="form-input" id="f-price" placeholder="0 = 무료" min="0" step="1000" oninput="calcPnl()">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">장소명</label>
+                        <input type="text" class="form-input" id="f-venue" placeholder="예: 성수동 카페 오프닝">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">주소</label>
+                        <input type="text" class="form-input" id="f-address" placeholder="예: 서울특별시 성동구 성수이로...">
+                        <span class="form-hint">참가자에게 공개됩니다</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Curriculum section (class only) -->
+            <div id="curriculum-section" style="display:none;background:#fff;border:1px solid var(--border-color);border-radius:14px;padding:24px;margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <div style="font-size:15px;font-weight:700;color:#111">커리큘럼</div>
+                    <button class="btn-add-item" onclick="addCurriculumRow()">＋ 회차 추가</button>
+                </div>
+                <div id="curriculum-list" style="display:flex;flex-direction:column;gap:10px;">
+                    <!-- rows added by JS -->
+                </div>
+            </div>
+
+            <!-- Timeslot section (popup only) -->
+            <div id="timeslot-section" style="display:none;background:#fff;border:1px solid var(--border-color);border-radius:14px;padding:24px;margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <div style="font-size:15px;font-weight:700;color:#111">타임슬롯</div>
+                    <button class="btn-add-item" onclick="addTimeslotRow()">＋ 슬롯 추가</button>
+                </div>
+                <div id="timeslot-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+            </div>
+
+            <!-- Poster generator -->
+            <div class="poster-gen-section">
+                <div class="poster-gen-header">
+                    <div>
+                        <div class="poster-gen-title">✨ 포스터 문구 AI 생성</div>
+                        <div class="poster-gen-sub">위에 입력한 이벤트 정보로 포스터용 카피를 만들어드려요</div>
+                    </div>
+                    <button class="btn-gen-poster" onclick="generatePosterCopy()">문구 생성하기</button>
+                </div>
+            </div>
+
+            <!-- Budget planner -->
+            <div class="budget-section">
+                <div class="budget-header">
+                    <div class="budget-title">💰 예산 플래너</div>
+                    <button class="btn-add-item" onclick="addBudgetRow()">＋ 지출 항목 추가</button>
+                </div>
+
+                <table class="budget-table">
+                    <thead>
+                        <tr>
+                            <th style="width:40%">항목</th>
+                            <th style="width:22%">분류</th>
+                            <th style="width:25%">금액 (원)</th>
+                            <th style="width:13%"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="budget-rows">
+                        <!-- rows added by JS -->
+                    </tbody>
+                </table>
+
+                <div class="pnl-box">
+                    <div class="pnl-row">
+                        <span class="pnl-row-label">총 수익 (현재 정원 기준)</span>
+                        <span class="pnl-row-value" id="pnl-revenue">₩0</span>
+                    </div>
+                    <div class="pnl-row">
+                        <span class="pnl-row-label">총 지출</span>
+                        <span class="pnl-row-value" id="pnl-expense">₩0</span>
+                    </div>
+                    <div class="pnl-row">
+                        <span class="pnl-row-label">플랫폼 수수료 (8%)</span>
+                        <span class="pnl-row-value" id="pnl-fee">₩0</span>
+                    </div>
+                    <hr class="pnl-divider">
+                    <div class="pnl-result">
+                        <span class="pnl-result-label">예상 손익</span>
+                        <span class="pnl-result-value zero" id="pnl-result">₩0</span>
+                    </div>
+                    <div class="breakeven-box" id="breakeven-box" style="display:none"></div>
+                </div>
+            </div>
+
+            <div class="wizard-actions">
+                <button class="btn-back" onclick="showView('type-select')">← 이전</button>
+                <button class="btn-submit" onclick="submitEvent()">🎉 이벤트 생성</button>
+            </div>
+        </div>
+
+        <!-- ── VIEW: Success ─────────────────────────────────────────── -->
+        <div id="view-success" class="plan-view">
+            <div class="success-wrap">
+                <div class="success-icon">🎊</div>
+                <div class="success-title">이벤트가 생성됐어요!</div>
+                <div class="success-desc" id="success-desc">
+                    이벤트 페이지가 준비됐습니다.<br>
+                    참가자 모집을 시작해보세요.
+                </div>
+                <div class="success-actions">
+                    <button class="btn-outline" onclick="showView('dashboard')">대시보드로 이동</button>
+                    <button class="btn-create" onclick="showView('type-select'); resetWizard()">＋ 새 이벤트 만들기</button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- .plan-container -->
+    </div><!-- .plan-page -->
+
+    <script>
+    (function () {
+        'use strict';
+
+        // ── State ───────────────────────────────────────────────────────
+        const state = {
+            type: null,
+            subType: null,
+            regMode: 'first_come',
+        };
+
+        const TYPE_CONFIG = {
+            gathering: {
+                color: '#ec4899',
+                label: '모임·파티',
+                subtypes: ['네트워킹 모임', '테마 파티', '소규모 친목', '취미 동호회'],
+            },
+            class: {
+                color: '#3b82f6',
+                label: '원데이 클래스',
+                subtypes: ['핸즈온 워크숍', '강의형 클래스', '소그룹 코칭', '자격증·시험 대비'],
+            },
+            popup: {
+                color: '#f59e0b',
+                label: '팝업·전시',
+                subtypes: ['브랜드 팝업스토어', '아트·사진 전시', '푸드 팝업', '복합 체험 부스'],
+            },
+        };
+
+        // ── D-day calculation ───────────────────────────────────────────
+        function calcDday(targetDate) {
+            const now = new Date(); now.setHours(0,0,0,0);
+            const target = new Date(targetDate);
+            const diff = Math.round((target - now) / 86400000);
+            if (diff === 0) return 'D-DAY';
+            if (diff > 0) return `D-${diff}`;
+            return `D+${Math.abs(diff)}`;
+        }
+
+        function fmtDate(d) {
+            return `${d.getMonth()+1}/${d.getDate()}(${['일','월','화','수','목','금','토'][d.getDay()]})`;
+        }
+
+        // Set mock event dates relative to today
+        (function initDates() {
+            const now = new Date();
+            const partyDate = new Date(now); partyDate.setDate(now.getDate() + 5);
+            const classDate = new Date(now); classDate.setDate(now.getDate() + 14);
+
+            const ddayEl = document.getElementById('dday-value');
+            if (ddayEl) ddayEl.textContent = `D-5`;
+
+            const pdEl = document.getElementById('party-date');
+            if (pdEl) pdEl.textContent = `📅 ${fmtDate(partyDate)}`;
+            const pdday = document.getElementById('party-dday');
+            if (pdday) pdday.textContent = calcDday(partyDate);
+
+            const cdEl = document.getElementById('class-date');
+            if (cdEl) cdEl.textContent = `📅 ${fmtDate(classDate)}`;
+            const cdday = document.getElementById('class-dday');
+            if (cdday) cdday.textContent = calcDday(classDate);
+
+            // Default date for form
+            const fd = document.getElementById('f-date');
+            if (fd) {
+                const soon = new Date(now); soon.setDate(now.getDate() + 14);
+                fd.value = soon.toISOString().slice(0,10);
+            }
+        })();
+
+        // ── View routing ────────────────────────────────────────────────
+        window.showView = function (viewId) {
+            document.querySelectorAll('.plan-view').forEach(v => v.classList.remove('active'));
+            const el = document.getElementById('view-' + viewId);
+            if (el) { el.classList.add('active'); window.scrollTo(0, 0); }
+        };
+
+        document.getElementById('btn-create-event')?.addEventListener('click', () => {
+            resetWizard();
+            showView('type-select');
+        });
+
+        // ── Type selection ──────────────────────────────────────────────
+        window.selectType = function (type) {
+            state.type = type;
+            state.subType = null;
+
+            const cfg = TYPE_CONFIG[type];
+
+            // Highlight selected card
+            document.querySelectorAll('.type-card').forEach(c => {
+                const selected = c.dataset.type === type;
+                c.classList.toggle('selected', selected);
+                if (selected) {
+                    c.style.borderColor = cfg.color;
+                    c.style.boxShadow = `0 4px 16px ${cfg.color}33`;
+                } else {
+                    c.style.borderColor = '';
+                    c.style.boxShadow = '';
+                }
+            });
+
+            // Render sub-types
+            const panel = document.getElementById('subtype-panel');
+            const grid  = document.getElementById('subtype-grid');
+            grid.innerHTML = cfg.subtypes.map(st =>
+                `<button class="subtype-btn" data-sub="${st}" onclick="selectSubType(this, '${st}')">${st}</button>`
+            ).join('');
+            panel.classList.add('visible');
+
+            // Disable next until sub-type chosen
+            document.getElementById('btn-to-step2').disabled = true;
+        };
+
+        window.selectSubType = function (btn, subType) {
+            state.subType = subType;
+            const cfg = TYPE_CONFIG[state.type];
+
+            document.querySelectorAll('.subtype-btn').forEach(b => {
+                b.classList.remove('selected');
+                b.style.background = '';
+                b.style.borderColor = '';
+                b.style.color = '';
+            });
+            btn.classList.add('selected');
+            btn.style.background = cfg.color;
+            btn.style.borderColor = cfg.color;
+            btn.style.color = '#fff';
+
+            document.getElementById('btn-to-step2').disabled = false;
+        };
+
+        window.setRegMode = function (btn) {
+            document.querySelectorAll('#reg-mode-group .radio-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.regMode = btn.dataset.value;
+        };
+
+        // ── Step 2: prepare form based on type ─────────────────────────
+        window.goToStep2 = function () {
+            if (!state.type || !state.subType) return;
+
+            // Update form subtitle
+            const cfg = TYPE_CONFIG[state.type];
+            const sub = document.getElementById('form-sub-desc');
+            if (sub) sub.textContent = `${cfg.label} — ${state.subType}`;
+
+            // Show/hide type-specific sections
+            document.getElementById('curriculum-section').style.display = state.type === 'class' ? 'block' : 'none';
+            document.getElementById('timeslot-section').style.display   = state.type === 'popup' ? 'block' : 'none';
+
+            // Prefill curriculum if class
+            if (state.type === 'class') {
+                const list = document.getElementById('curriculum-list');
+                if (!list.children.length) addCurriculumRow();
+            }
+
+            // Prefill timeslot if popup
+            if (state.type === 'popup') {
+                const list = document.getElementById('timeslot-list');
+                if (!list.children.length) { addTimeslotRow(); addTimeslotRow(); }
+            }
+
+            // Add default budget rows if empty
+            const tbody = document.getElementById('budget-rows');
+            if (!tbody.children.length) {
+                const defaults = {
+                    gathering: [['장소 대관비', 'venue', 200000], ['케이터링', 'catering', 150000], ['데코', 'deco', 50000]],
+                    class:     [['장소 대관비', 'venue', 100000], ['재료비', 'equipment', 80000], ['진행 인건비', 'staff', 100000]],
+                    popup:     [['공간 임대', 'venue', 300000], ['전시물 제작', 'equipment', 200000], ['홍보물', 'deco', 50000]],
+                };
+                (defaults[state.type] || []).forEach(([l, c, a]) => addBudgetRow(l, c, a));
+            }
+
+            calcPnl();
+            showView('form');
+        };
+
+        // ── Curriculum rows ─────────────────────────────────────────────
+        window.addCurriculumRow = function () {
+            const list = document.getElementById('curriculum-list');
+            const idx = list.children.length + 1;
+            const row = document.createElement('div');
+            row.style.cssText = 'display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center';
+            row.innerHTML = `
+                <span style="font-size:12px;font-weight:700;color:#9ca3af;white-space:nowrap">${idx}회차</span>
+                <input class="form-input" placeholder="커리큘럼 내용 (예: 향료 소개 및 블렌딩 실습)" style="margin:0">
+                <button class="btn-del" onclick="this.closest('div').remove()" title="삭제">×</button>
+            `;
+            list.appendChild(row);
+        };
+
+        // ── Timeslot rows ───────────────────────────────────────────────
+        window.addTimeslotRow = function () {
+            const list = document.getElementById('timeslot-list');
+            const row = document.createElement('div');
+            row.style.cssText = 'display:grid;grid-template-columns:120px 1fr auto;gap:10px;align-items:center';
+            row.innerHTML = `
+                <input type="time" class="form-input" style="margin:0" value="11:00">
+                <input class="form-input" placeholder="슬롯 설명 (예: 오전 1부 — 최대 20명)" style="margin:0">
+                <button class="btn-del" onclick="this.closest('div').remove()" title="삭제">×</button>
+            `;
+            list.appendChild(row);
+        };
+
+        // ── Budget rows ─────────────────────────────────────────────────
+        window.addBudgetRow = function (label = '', cat = 'etc', amount = '') {
+            const tbody = document.getElementById('budget-rows');
+            const tr = document.createElement('tr');
+            tr.className = 'budget-row';
+            tr.innerHTML = `
+                <td><input type="text" placeholder="항목명" value="${label}" oninput="calcPnl()"></td>
+                <td>
+                    <select onchange="calcPnl()">
+                        <option value="venue"     ${cat==='venue'?'selected':''}>장소</option>
+                        <option value="catering"  ${cat==='catering'?'selected':''}>케이터링</option>
+                        <option value="deco"      ${cat==='deco'?'selected':''}>데코</option>
+                        <option value="staff"     ${cat==='staff'?'selected':''}>인건비</option>
+                        <option value="equipment" ${cat==='equipment'?'selected':''}>장비·재료</option>
+                        <option value="etc"       ${cat==='etc'?'selected':''}>기타</option>
+                    </select>
+                </td>
+                <td class="amount-cell"><input type="number" min="0" step="1000" placeholder="0" value="${amount}" oninput="calcPnl()"></td>
+                <td><button class="btn-del" onclick="this.closest('tr').remove();calcPnl()" title="삭제">×</button></td>
+            `;
+            tbody.appendChild(tr);
+        };
+
+        // ── P&L calculation ─────────────────────────────────────────────
+        window.calcPnl = function () {
+            const capacity = parseInt(document.getElementById('f-capacity')?.value) || 0;
+            const price    = parseInt(document.getElementById('f-price')?.value)    || 0;
+
+            const revenue = capacity * price;
+            const fee     = Math.round(revenue * 0.08);
+
+            let expense = 0;
+            document.querySelectorAll('#budget-rows .budget-row').forEach(row => {
+                const amt = parseInt(row.querySelector('input[type=number]')?.value) || 0;
+                expense += amt;
+            });
+
+            const profit = revenue - expense - fee;
+
+            const fmt = n => `${n < 0 ? '-' : ''}₩${Math.abs(n).toLocaleString()}`;
+
+            document.getElementById('pnl-revenue').textContent = fmt(revenue);
+            document.getElementById('pnl-expense').textContent = fmt(expense);
+            document.getElementById('pnl-fee').textContent     = fmt(fee);
+
+            const resultEl = document.getElementById('pnl-result');
+            resultEl.textContent = fmt(profit);
+            resultEl.className = 'pnl-result-value ' + (profit > 0 ? 'positive' : profit < 0 ? 'negative' : 'zero');
+
+            // Breakeven
+            const beEl = document.getElementById('breakeven-box');
+            if (price > 0 && expense > 0) {
+                const totalCost = expense; // fee is revenue-side
+                const beTickets = Math.ceil(totalCost / (price * 0.92)); // net per ticket after 8% fee
+                if (profit < 0) {
+                    const needed = beTickets - capacity;
+                    beEl.className = 'breakeven-box need-more';
+                    beEl.textContent = `손익분기점까지 티켓 ${beTickets}장 필요 — 현재 정원 대비 ${Math.max(0,needed)}장 부족합니다.`;
+                } else {
+                    const extra = capacity - beTickets;
+                    beEl.className = 'breakeven-box covered';
+                    beEl.textContent = `손익분기점(${beTickets}장)을 초과 달성 — 예상 순이익 ${fmt(profit)}`;
+                }
+                beEl.style.display = 'block';
+            } else {
+                beEl.style.display = 'none';
+            }
+        };
+
+        // ── Poster copy generator ───────────────────────────────────────
+        const APIKEY_KEY = 'jg_anthropic_key';
+
+        window.generatePosterCopy = function () {
+            const key = localStorage.getItem(APIKEY_KEY);
+            if (!key) {
+                document.getElementById('apikey-modal').classList.add('open');
+                return;
+            }
+            _callClaude(key);
+        };
+
+        window.saveApiKey = function () {
+            const key = document.getElementById('apikey-input').value.trim();
+            if (!key.startsWith('sk-')) {
+                document.getElementById('apikey-input').style.borderColor = '#ef4444';
+                setTimeout(() => { document.getElementById('apikey-input').style.borderColor = ''; }, 1500);
+                return;
+            }
+            localStorage.setItem(APIKEY_KEY, key);
+            closeApikeyModal();
+            _callClaude(key);
+        };
+
+        window.closeApikeyModal = function (e) {
+            if (!e || e.target === document.getElementById('apikey-modal')) {
+                document.getElementById('apikey-modal').classList.remove('open');
+            }
+        };
+
+        window.closePosterModal = function (e) {
+            if (!e || e.target === document.getElementById('poster-modal')) {
+                document.getElementById('poster-modal').classList.remove('open');
+            }
+        };
+
+        async function _callClaude(apiKey) {
+            const title   = document.getElementById('f-title')?.value.trim()   || '';
+            const tagline = document.getElementById('f-tagline')?.value.trim() || '';
+            const desc    = document.getElementById('f-desc')?.value.trim()    || '';
+            const date    = document.getElementById('f-date')?.value           || '';
+            const time    = document.getElementById('f-time')?.value           || '';
+            const venue   = document.getElementById('f-venue')?.value.trim()   || '';
+            const price   = document.getElementById('f-price')?.value          || '0';
+
+            if (!title) {
+                document.getElementById('f-title').focus();
+                document.getElementById('f-title').style.borderColor = '#ef4444';
+                setTimeout(() => { document.getElementById('f-title').style.borderColor = ''; }, 1500);
+                return;
+            }
+
+            const btn = document.querySelector('.btn-gen-poster');
+            btn.disabled = true;
+            btn.textContent = '생성 중...';
+
+            const modal = document.getElementById('poster-modal');
+            const body  = document.getElementById('poster-modal-body');
+            body.innerHTML = `<div class="poster-loading"><span class="poster-loading-dots">AI가 문구를 작성하고 있어요</span></div>`;
+            modal.classList.add('open');
+
+            const eventInfo = [
+                `이벤트명: ${title}`,
+                tagline ? `소개: ${tagline}` : '',
+                desc    ? `설명: ${desc}` : '',
+                date    ? `일시: ${date} ${time}` : '',
+                venue   ? `장소: ${venue}` : '',
+                `참가비: ${price == 0 ? '무료' : Number(price).toLocaleString() + '원'}`,
+            ].filter(Boolean).join('\n');
+
+            const prompt = `다음 이벤트 정보를 바탕으로 SNS/포스터용 카피를 한국어로 작성해주세요.
+
+${eventInfo}
+
+아래 JSON 형식으로만 응답해주세요 (마크다운 없이):
+{
+  "headline": "눈길을 끄는 메인 헤드라인 (15자 이내)",
+  "subheadline": "헤드라인을 보완하는 서브 카피 (30자 이내)",
+  "body": "참가를 유도하는 본문 2-3문장",
+  "cta": "행동 유도 문구 (10자 이내, 예: 지금 신청하기)",
+  "hashtags": "#해시태그1 #해시태그2 #해시태그3 #해시태그4 #해시태그5"
+}`;
+
+            try {
+                const res = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true',
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-haiku-4-5-20251001',
+                        max_tokens: 512,
+                        messages: [{ role: 'user', content: prompt }],
+                    }),
+                });
+
+                if (res.status === 401) {
+                    localStorage.removeItem(APIKEY_KEY);
+                    body.innerHTML = `<p style="color:#ef4444;font-size:14px;padding:16px 0">API 키가 유효하지 않아요. 다시 입력해주세요.</p>`;
+                    modal.classList.remove('open');
+                    document.getElementById('apikey-input').value = '';
+                    document.getElementById('apikey-modal').classList.add('open');
+                    return;
+                }
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                const data = await res.json();
+                const raw  = data.content?.[0]?.text || '{}';
+                let copy;
+                try { copy = JSON.parse(raw); } catch { copy = {}; }
+
+                const fields = [
+                    { label: '메인 헤드라인', key: 'headline' },
+                    { label: '서브 카피',     key: 'subheadline' },
+                    { label: '본문',          key: 'body' },
+                    { label: '행동 유도 문구', key: 'cta' },
+                    { label: '해시태그',      key: 'hashtags' },
+                ];
+
+                body.innerHTML = fields.map(f => copy[f.key] ? `
+                    <div class="poster-copy-block">
+                        <div class="poster-copy-label">${f.label}</div>
+                        <div class="poster-copy-row">
+                            <div class="poster-copy-text" id="pc-${f.key}">${copy[f.key]}</div>
+                            <button class="btn-copy" onclick="copyPosterField('${f.key}', this)">복사</button>
+                        </div>
+                    </div>` : '').join('');
+
+            } catch (err) {
+                body.innerHTML = `<p style="color:#ef4444;font-size:14px;padding:16px 0">오류가 발생했어요: ${err.message}</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '문구 생성하기';
+            }
+        }
+
+        window.copyPosterField = function (key, btn) {
+            const text = document.getElementById('pc-' + key)?.textContent || '';
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = '복사됨 ✓';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+            });
+        };
+
+        // ── Submit ──────────────────────────────────────────────────────
+        window.submitEvent = function () {
+            const title = document.getElementById('f-title')?.value.trim();
+            if (!title) {
+                document.getElementById('f-title').focus();
+                document.getElementById('f-title').style.borderColor = '#ef4444';
+                setTimeout(() => { document.getElementById('f-title').style.borderColor = ''; }, 1500);
+                return;
+            }
+
+            const cfg = TYPE_CONFIG[state.type];
+            const desc = document.getElementById('success-desc');
+            if (desc) desc.innerHTML = `<strong>${title}</strong>이(가) 생성됐습니다.<br>참가자 모집을 시작해보세요.`;
+
+            showView('success');
+        };
+
+        // ── Reset wizard ────────────────────────────────────────────────
+        window.resetWizard = function () {
+            state.type = null;
+            state.subType = null;
+            state.regMode = 'first_come';
+
+            document.querySelectorAll('.type-card').forEach(c => {
+                c.classList.remove('selected');
+                c.style.borderColor = '';
+                c.style.boxShadow = '';
+            });
+            document.getElementById('subtype-panel').classList.remove('visible');
+            document.getElementById('btn-to-step2').disabled = true;
+            document.getElementById('budget-rows').innerHTML = '';
+            document.getElementById('curriculum-list').innerHTML = '';
+            document.getElementById('timeslot-list').innerHTML = '';
+
+            // Reset radio buttons
+            document.querySelectorAll('#reg-mode-group .radio-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+
+            // Reset toggles
+            ['opt-group', 'opt-waitlist'].forEach(id => { const el = document.getElementById(id); if (el) el.checked = true; });
+            ['opt-filter', 'opt-recurring'].forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
+
+            // Reset form fields
+            ['f-title','f-tagline','f-desc','f-venue','f-address'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.value = '';
+            });
+            const fd = document.getElementById('f-date');
+            if (fd) { const d = new Date(); d.setDate(d.getDate()+14); fd.value = d.toISOString().slice(0,10); }
+            const ft = document.getElementById('f-time');
+            if (ft) ft.value = '19:00';
+            const fc = document.getElementById('f-capacity'); if (fc) fc.value = '';
+            const fp = document.getElementById('f-price'); if (fp) fp.value = '';
+        };
+
+        // Trigger P&L when capacity/price changes
+        document.getElementById('f-capacity')?.addEventListener('input', calcPnl);
+        document.getElementById('f-price')?.addEventListener('input', calcPnl);
+
+    })();
+    </script>
+
+    <!-- ── Poster Copy Modal ────────────────────────────────────────── -->
+    <div id="poster-modal" class="poster-modal-overlay" onclick="closePosterModal(event)">
+        <div class="poster-modal">
+            <div class="poster-modal-head">
+                <span class="poster-modal-title">포스터 문구</span>
+                <button class="poster-modal-close" onclick="closePosterModal()">✕</button>
+            </div>
+            <div id="poster-modal-body" class="poster-modal-body">
+                <!-- content injected by JS -->
+            </div>
+            <div class="poster-modal-footer">
+                <a class="btn-canva" href="https://www.canva.com/ko_kr/templates/?query=이벤트+포스터" target="_blank" rel="noopener">
+                    Canva에서 포스터 만들기 →
+                </a>
+                <span class="poster-modal-hint">문구를 복사해 Canva 템플릿에 붙여넣으세요</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── API Key Modal ─────────────────────────────────────────────── -->
+    <div id="apikey-modal" class="poster-modal-overlay" onclick="closeApikeyModal(event)">
+        <div class="poster-modal" style="max-width:420px">
+            <div class="poster-modal-head">
+                <span class="poster-modal-title">Anthropic API 키 설정</span>
+                <button class="poster-modal-close" onclick="closeApikeyModal()">✕</button>
+            </div>
+            <div style="padding:24px 24px 0">
+                <p style="font-size:13px;color:var(--text-gray);margin-bottom:16px;line-height:1.6">
+                    Claude AI로 포스터 문구를 생성하려면 Anthropic API 키가 필요해요.<br>
+                    키는 이 기기에만 저장되며 외부로 전송되지 않아요.
+                </p>
+                <input type="password" id="apikey-input" class="form-input" placeholder="sk-ant-..." style="font-family:monospace;font-size:13px">
+                <span class="form-hint" style="margin-top:6px;display:block">
+                    <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener" style="color:var(--brand)">console.anthropic.com</a>에서 발급받을 수 있어요
+                </span>
+            </div>
+            <div class="poster-modal-footer" style="justify-content:flex-end">
+                <button class="btn-submit" style="padding:10px 24px" onclick="saveApiKey()">저장하고 생성</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

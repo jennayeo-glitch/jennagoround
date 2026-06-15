@@ -8,6 +8,9 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jennayeo-glitch.github.io/jennagoround/event-detail.html">
     <meta property="og:description" content="해피여졍 이벤트 상세 페이지">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Kakao SDK -->
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <style>
@@ -657,6 +660,7 @@
             }
         }
     </style>
+  <link rel="stylesheet" crossorigin href="./assets/detail-CMP-_Jno.css">
   <link rel="stylesheet" crossorigin href="./assets/styles-bMoHsi2H.css">
 </head>
 <body>
@@ -716,8 +720,11 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="firebase.js"></script>
+    <script src="config.js"></script>
     <script src="events.js"></script>
+    <script src="google-sheets-sync.js"></script>
+    <script src="firebase.js"></script>
+    <script src="registration-form.js"></script>
     <script src="auth.js"></script>
     <script>
         // Get event ID from URL
@@ -836,7 +843,7 @@
                             </div>
                         </div>
                         <div class="schedule-actions">
-                            <button id="participate-btn" class="participate-button">참여하기</button>
+                            <button id="participate-btn" class="participate-button">참가 신청</button>
                             ${kakaoChatBtn}
                         </div>
                     </div>
@@ -894,8 +901,13 @@
             return eventDay < todayLocal;
         }
 
-        function setParticipateButtonUi(participateBtn, { isLoggedIn, isParticipated, current, total, isPast }) {
-            if (isPast) {
+        /** registrationOpen 이벤트는 날짜와 관계없이 신청 가능 (마감만 체크) */
+        function isParticipationEnded(event) {
+            return !event.registrationOpen && isPastEventDay(event.date);
+        }
+
+        function setParticipateButtonUi(participateBtn, { event, isLoggedIn, isParticipated, current, total }) {
+            if (isParticipationEnded(event)) {
                 participateBtn.disabled = true;
                 participateBtn.classList.remove('participated');
                 participateBtn.textContent = 'Ended';
@@ -917,8 +929,24 @@
                 }
             } else {
                 participateBtn.classList.remove('participated');
-                participateBtn.textContent = '참여하기';
+                participateBtn.textContent = event.registrationOpen ? '참가 신청' : '참여하기';
             }
+        }
+
+        function openRegistrationForm(event, user) {
+            RegistrationForm.open({
+                event,
+                user: user || { nickname: '', gender: '', birthyear: '' },
+                onSubmit: async (application) => {
+                    const stored = localStorage.getItem('kakao_user');
+                    if (!stored) {
+                        alert('로그인이 필요합니다. 카카오 로그인 후 다시 신청해 주세요.');
+                        throw new Error('로그인이 필요합니다.');
+                    }
+                    const loggedInUser = JSON.parse(stored);
+                    await EventParticipants.addParticipant(event.id, loggedInUser, application);
+                }
+            });
         }
 
         // Participate button functionality
@@ -953,11 +981,11 @@
             updateCapacityDisplay(displayedCurrent, event.capacity.total);
             
             setParticipateButtonUi(participateBtn, {
+                event,
                 isLoggedIn,
                 isParticipated,
                 current: displayedCurrent,
-                total: event.capacity.total,
-                isPast: isPastEventDay(event.date)
+                total: event.capacity.total
             });
 
             // Render participants on load
@@ -974,11 +1002,11 @@
                 renderParticipants(event, participants);
 
                 setParticipateButtonUi(participateBtn, {
+                    event,
                     isLoggedIn,
                     isParticipated: newIsParticipated,
                     current: newCurrent,
-                    total: event.capacity.total,
-                    isPast: isPastEventDay(event.date)
+                    total: event.capacity.total
                 });
                 
                 // Trigger custom event to update main page
@@ -989,53 +1017,81 @@
 
             // Add click event
             participateBtn.addEventListener('click', async function() {
-                if (isPastEventDay(event.date)) {
+                if (isParticipationEnded(event)) {
                     return;
                 }
-                // Get current user info
+
                 const userInfoClick = localStorage.getItem('kakao_user');
-                if (!userInfoClick) {
+                const user = userInfoClick ? JSON.parse(userInfoClick) : null;
+
+                // 참가신청서 이벤트: 로그인 없이도 신청서 먼저 열기
+                if (event.registrationOpen) {
+                    try {
+                        const participantsList = await EventParticipants.getParticipants(event.id);
+
+                        if (user && participantsList.some(p => p.id === user.id)) {
+                            if (!confirm('참가 신청을 취소할까요?')) return;
+                            await EventParticipants.removeParticipant(event.id, user.id);
+                            return;
+                        }
+
+                        const newCurrent = event.capacity.current + participantsList.length;
+                        if (newCurrent >= event.capacity.total) {
+                            alert('마감되었습니다.');
+                            setParticipateButtonUi(participateBtn, {
+                                event,
+                                isLoggedIn: !!user,
+                                isParticipated: false,
+                                current: newCurrent,
+                                total: event.capacity.total
+                            });
+                            return;
+                        }
+
+                        openRegistrationForm(event, user);
+                    } catch (error) {
+                        console.error('Error opening registration:', error);
+                        alert(error.message || '참가 신청을 열 수 없습니다.');
+                    }
+                    return;
+                }
+
+                if (!user) {
                     alert('로그인이 필요합니다.');
                     return;
                 }
-                const user = JSON.parse(userInfoClick);
-                
-                // Disable button during operation
+
                 participateBtn.disabled = true;
-                
+
                 try {
-                    // Get current participants
                     let participantsList = await EventParticipants.getParticipants(event.id);
-                    
-                    // Check if user is already in participants
                     const isAlreadyParticipated = participantsList.some(p => p.id === user.id);
-                    
+
                     if (isAlreadyParticipated) {
-                        // Cancel participation
+                        if (!confirm('참가 신청을 취소할까요?')) {
+                            participateBtn.disabled = false;
+                            return;
+                        }
                         await EventParticipants.removeParticipant(event.id, user.id);
-                        // Real-time subscription will update UI automatically
                     } else {
-                        // Check capacity before participating
                         const newCurrent = event.capacity.current + participantsList.length;
-                        
+
                         if (newCurrent >= event.capacity.total) {
                             alert('마감되었습니다.');
                             const p = await EventParticipants.getParticipants(event.id);
                             const cur = getDisplayCapacityCurrent(event, p);
                             const participated = p.some(x => x.id === user.id);
                             setParticipateButtonUi(participateBtn, {
+                                event,
                                 isLoggedIn: true,
                                 isParticipated: participated,
                                 current: cur,
-                                total: event.capacity.total,
-                                isPast: isPastEventDay(event.date)
+                                total: event.capacity.total
                             });
                             return;
                         }
-                        
-                        // Add user to participants
+
                         await EventParticipants.addParticipant(event.id, user);
-                        // Real-time subscription will update UI automatically
                     }
                 } catch (error) {
                     console.error('Error updating participation:', error);
@@ -1044,11 +1100,11 @@
                     const cur = getDisplayCapacityCurrent(event, p);
                     const participated = p.some(x => x.id === user.id);
                     setParticipateButtonUi(participateBtn, {
+                        event,
                         isLoggedIn: true,
                         isParticipated: participated,
                         current: cur,
-                        total: event.capacity.total,
-                        isPast: isPastEventDay(event.date)
+                        total: event.capacity.total
                     });
                 }
             });
