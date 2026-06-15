@@ -47,7 +47,7 @@ const GoogleSheetsSync = {
             return;
         }
 
-        const payload = this.buildPayload(eventId, user, application);
+        const payload = { ...this.buildPayload(eventId, user, application), action: 'register' };
 
         fetch(url, {
             method: 'POST',
@@ -56,6 +56,30 @@ const GoogleSheetsSync = {
             body: JSON.stringify(payload)
         }).catch((err) => {
             console.warn('[GoogleSheetsSync] 전송 실패:', err);
+        });
+    },
+
+    /** 참여 취소 시 시트 해당 행 비고에 "참여 취소" 표시 */
+    pushCancellation(eventId, user) {
+        if (!user || !user.id) return;
+
+        const url = this.getWebhookUrl(eventId);
+        if (!url) return;
+
+        const cfg = window.APP_CONFIG || {};
+
+        fetch(url, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                secret: cfg.googleSheetsWebhookSecret || '',
+                action: 'cancel',
+                eventId,
+                kakaoId: user.id
+            })
+        }).catch((err) => {
+            console.warn('[GoogleSheetsSync] 취소 전송 실패:', err);
         });
     }
 };

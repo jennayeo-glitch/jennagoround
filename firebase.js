@@ -138,7 +138,7 @@ const EventParticipants = {
             initFirebase();
             if (!db) {
                 console.warn('Firebase not initialized, using localStorage fallback');
-                return this.removeParticipantFromLocalStorage(eventId, userId);
+                return this.removeParticipantWithSync(eventId, userId);
             }
         }
 
@@ -151,6 +151,7 @@ const EventParticipants = {
             }
 
             let participants = eventDoc.data().participants || [];
+            const removed = participants.find(p => p.id === userId);
             participants = participants.filter(p => p.id !== userId);
 
             await eventRef.set({
@@ -160,6 +161,10 @@ const EventParticipants = {
 
             // Also update localStorage as fallback
             this.removeParticipantFromLocalStorage(eventId, userId);
+
+            if (removed && typeof GoogleSheetsSync !== 'undefined') {
+                GoogleSheetsSync.pushCancellation(eventId, { id: userId, nickname: removed.nickname });
+            }
 
             return participants;
         } catch (error) {
@@ -250,6 +255,20 @@ const EventParticipants = {
         let participants = this.getParticipantsFromLocalStorage(eventId);
         participants = participants.filter(p => p.id !== userId);
         localStorage.setItem(key, JSON.stringify(participants));
+        return participants;
+    },
+
+    removeParticipantWithSync(eventId, userId) {
+        const key = `event_participants_${eventId}`;
+        let participants = this.getParticipantsFromLocalStorage(eventId);
+        const removed = participants.find(p => p.id === userId);
+        participants = participants.filter(p => p.id !== userId);
+        localStorage.setItem(key, JSON.stringify(participants));
+
+        if (removed && typeof GoogleSheetsSync !== 'undefined') {
+            GoogleSheetsSync.pushCancellation(eventId, { id: userId, nickname: removed.nickname });
+        }
+
         return participants;
     }
 };

@@ -30,7 +30,8 @@ var HEADERS = [
   '출생년도',
   '전화번호',
   '동반자',
-  '메시지'
+  '메시지',
+  '비고'
 ];
 
 function doPost(e) {
@@ -43,6 +44,11 @@ function doPost(e) {
 
     var sheet = getOrCreateSheet_();
     ensureHeaders_(sheet);
+
+    if (data.action === 'cancel') {
+      var updated = markCancelled_(sheet, data.eventId, data.kakaoId);
+      return jsonResponse({ success: true, updated: updated });
+    }
 
     sheet.appendRow([
       data.submittedAt || new Date().toISOString(),
@@ -57,7 +63,8 @@ function doPost(e) {
       data.birthYear || '',
       data.phone || '',
       data.companionName || '',
-      data.message || ''
+      data.message || '',
+      ''
     ]);
 
     return jsonResponse({ success: true });
@@ -80,7 +87,49 @@ function ensureHeaders_(sheet) {
     sheet.appendRow(HEADERS);
     sheet.setFrozenRows(1);
     sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold');
+    return;
   }
+
+  var lastCol = sheet.getLastColumn();
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  if (headers.indexOf('비고') === -1) {
+    sheet.getRange(1, lastCol + 1).setValue('비고').setFontWeight('bold');
+  }
+}
+
+function markCancelled_(sheet, eventId, kakaoId) {
+  if (!kakaoId) return false;
+
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return false;
+
+  var lastCol = sheet.getLastColumn();
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  var eventIdCol = headers.indexOf('이벤트ID') + 1;
+  var kakaoIdCol = headers.indexOf('카카오ID') + 1;
+  var noteCol = headers.indexOf('비고') + 1;
+
+  if (eventIdCol < 1 || kakaoIdCol < 1) return false;
+  if (noteCol < 1) {
+    noteCol = lastCol + 1;
+    sheet.getRange(1, noteCol).setValue('비고').setFontWeight('bold');
+  }
+
+  var targetEventId = String(eventId);
+  var targetKakaoId = String(kakaoId);
+  var data = sheet.getRange(2, 1, lastRow, lastCol).getValues();
+
+  for (var i = data.length - 1; i >= 0; i--) {
+    var rowEventId = String(data[i][eventIdCol - 1] || '');
+    var rowKakaoId = String(data[i][kakaoIdCol - 1] || '');
+
+    if (rowEventId === targetEventId && rowKakaoId === targetKakaoId) {
+      sheet.getRange(i + 2, noteCol).setValue('참여 취소');
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function formatGender_(gender) {

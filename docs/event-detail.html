@@ -1024,8 +1024,13 @@
                 const userInfoClick = localStorage.getItem('kakao_user');
                 const user = userInfoClick ? JSON.parse(userInfoClick) : null;
 
-                // 참가신청서 이벤트: 로그인 없이도 신청서 먼저 열기
+                // 참가신청서 이벤트: 로그인 후 신청서 열기
                 if (event.registrationOpen) {
+                    if (!user) {
+                        alert('참가 신청을 하려면 로그인이 필요합니다.');
+                        return;
+                    }
+
                     try {
                         const participantsList = await EventParticipants.getParticipants(event.id);
 
