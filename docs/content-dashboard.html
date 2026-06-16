@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>콘텐츠 대시보드 — jennagoround</title>
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/content-BIQpyBTF.css">
+  <link rel="stylesheet" crossorigin href="./assets/styles-DbiYfY7D.css">
+  <link rel="stylesheet" crossorigin href="./assets/admin-BZ9Pqeyz.css">
+</head>
+<body class="admin-page">
+    <header class="admin-header" id="admin-header" style="display: none;">
+        <div class="admin-header-brand">
+            <img src="./assets/jennagoround_logo-CLLi3Mf-.png" alt="FINDING NANGMAN" class="logo-image">
+            <span class="admin-header-title">콘텐츠 대시보드</span>
+        </div>
+        <nav class="admin-header-nav">
+            <a href="admin.html" class="admin-nav-link">이벤트</a>
+            <a href="backoffice.html" class="admin-nav-link">백오피스</a>
+            <a href="content-dashboard.html" class="admin-nav-link active">콘텐츠</a>
+            <a href="index.html" class="admin-nav-link">사이트로</a>
+            <span class="admin-user" id="admin-user-label"></span>
+            <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" id="admin-logout-btn" style="color:#fff;border-color:rgba(255,255,255,0.3);background:transparent;">로그아웃</button>
+        </nav>
+    </header>
+
+    <div id="admin-gate"></div>
+
+    <main class="admin-container content-dash-wide" id="admin-main" style="display: none;">
+        <h1 class="admin-page-title">SNS 콘텐츠 분석</h1>
+        <p class="admin-page-sub">개인 유튜브 · FINDING NANGMAN · jennagoround — 3개 채널 성과를 한곳에서 확인합니다.</p>
+        <div id="content-root">
+            <div class="admin-loading">불러오는 중…</div>
+        </div>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="admin-auth.js"></script>
+    <script src="content-dashboard-page.js"></script>
+</body>
+</html>

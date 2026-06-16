@@ -46,7 +46,6 @@ const RegistrationForm = (() => {
                 field: 'realName',
                 inputType: 'text',
                 title: '실명을 입력해주세요.',
-                subtitle: '친구와 함께 신청하면, 친구 실명도 함께',
                 placeholder: '이름',
                 nextLabel: '다음 질문'
             },
@@ -55,7 +54,7 @@ const RegistrationForm = (() => {
                 field: 'birthYear',
                 inputType: 'number',
                 title: '출생년도를 입력해주세요.',
-                subtitle: '입장시 신분증 확인\n친구와 함께 신청하면, 친구 출생년도 함께',
+                subtitle: '입장시 신분증 확인',
                 placeholder: '숫자를 입력해 주세요.',
                 nextLabel: '다음 문제'
             },
@@ -63,20 +62,9 @@ const RegistrationForm = (() => {
                 type: 'input',
                 field: 'phone',
                 inputType: 'tel',
-                title: '실제 참여하는 분의 전화번호를\n입력해주세요.',
-                subtitle: '본인의 전화번호만',
+                title: '전화번호를 입력해주세요.',
                 placeholder: '전화번호 입력',
                 nextLabel: '다음 질문'
-            },
-            {
-                type: 'input',
-                field: 'companionName',
-                inputType: 'text',
-                title: '동반자 실명 (선택)',
-                subtitle: '함께 신청하는 친구가 있다면 입력해 주세요',
-                placeholder: '동반자 이름',
-                optional: true,
-                nextLabel: '다음 문제'
             },
             {
                 type: 'input',
@@ -173,6 +161,11 @@ const RegistrationForm = (() => {
         if (ev.fee) lines.push('', `❗️ 참가비 ❗️`, ev.fee);
         if (ev.preparation) lines.push('', `🎒 준비물`, ev.preparation);
         lines.push(
+            '',
+            '☺︎ 계좌번호 143-910365-73407 하나',
+            '입금 완료 확인되면 안내 문자 발송됩니다!',
+            '',
+            '입금은 1번으로 기입하신 성함(또는 닉네임)으로 부탁드립니다.',
             '',
             '❗️ 스크롤 내려서 아래사항 모두 확인 ❗️',
             '',

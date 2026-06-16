@@ -1,0 +1,64 @@
+{
+  "updatedAt": "2026-06-12T09:00:00.000Z",
+  "source": "demo-seed",
+  "channels": {
+    "youtube-personal": {
+      "subscribers": null,
+      "totalViews": null,
+      "videoCount": null,
+      "avgViews": null,
+      "history": [],
+      "recentContent": []
+    },
+    "instagram-nangman": {
+      "followers": 486,
+      "posts": 28,
+      "reach": 3200,
+      "engagementRate": 5.2,
+      "history": [
+        { "month": "2026-01", "followers": 120 },
+        { "month": "2026-02", "followers": 198 },
+        { "month": "2026-03", "followers": 285 },
+        { "month": "2026-04", "followers": 362 },
+        { "month": "2026-05", "followers": 421 },
+        { "month": "2026-06", "followers": 486 }
+      ],
+      "recentContent": [
+        {
+          "title": "6/19 FINDING NANGMAN — 로테이션 소개팅",
+          "likes": 84,
+          "publishedAt": "2026-06-01T12:00:00.000Z",
+          "url": "https://www.instagram.com/finding.nangman/"
+        },
+        {
+          "title": "이번 주말, 낭만 한 스푼 🌙",
+          "likes": 62,
+          "publishedAt": "2026-05-25T09:00:00.000Z",
+          "url": "https://www.instagram.com/finding.nangman/"
+        }
+      ]
+    },
+    "instagram-jennagoround": {
+      "followers": 1240,
+      "posts": 156,
+      "reach": 8500,
+      "engagementRate": 3.8,
+      "history": [
+        { "month": "2026-01", "followers": 980 },
+        { "month": "2026-02", "followers": 1020 },
+        { "month": "2026-03", "followers": 1085 },
+        { "month": "2026-04", "followers": 1140 },
+        { "month": "2026-05", "followers": 1195 },
+        { "month": "2026-06", "followers": 1240 }
+      ],
+      "recentContent": [
+        {
+          "title": "BUTTER RUN 4/4 모집 마감 🧈",
+          "likes": 128,
+          "publishedAt": "2026-03-20T08:00:00.000Z",
+          "url": "https://www.instagram.com/jennagoround/"
+        }
+      ]
+    }
+  }
+}

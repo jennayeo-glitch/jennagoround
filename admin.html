@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>관리자 대시보드 — jennagoround</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body class="admin-page">
+    <header class="admin-header" id="admin-header" style="display: none;">
+        <div class="admin-header-brand">
+            <img src="img/logo/jennagoround_logo.png" alt="FINDING NANGMAN" class="logo-image">
+            <span class="admin-header-title">관리자 대시보드</span>
+        </div>
+        <nav class="admin-header-nav">
+            <a href="admin.html" class="admin-nav-link active">이벤트</a>
+            <a href="backoffice.html" class="admin-nav-link">백오피스</a>
+            <a href="content-dashboard.html" class="admin-nav-link">콘텐츠</a>
+            <a href="index.html" class="admin-nav-link">사이트로</a>
+            <span class="admin-user" id="admin-user-label"></span>
+            <button type="button" class="admin-btn admin-btn-outline admin-btn-sm" id="admin-logout-btn" style="color:#fff;border-color:rgba(255,255,255,0.3);background:transparent;">로그아웃</button>
+        </nav>
+    </header>
+
+    <div id="admin-gate"></div>
+
+    <main class="admin-container" id="admin-main" style="display: none;">
+        <h1 class="admin-page-title">이벤트 현황</h1>
+        <p class="admin-page-sub">등록·모집 중인 이벤트와 참가자 수를 한눈에 확인하세요.</p>
+
+        <div class="admin-stat-grid" id="stat-grid">
+            <div class="admin-stat-card">
+                <div class="admin-stat-label">전체 이벤트</div>
+                <div class="admin-stat-value" id="stat-total-events">—</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-label">신청 접수 중</div>
+                <div class="admin-stat-value" id="stat-open-events">—</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-label">총 신청자</div>
+                <div class="admin-stat-value" id="stat-total-applicants">—</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-label">다가오는 이벤트</div>
+                <div class="admin-stat-value" id="stat-upcoming">—</div>
+                <div class="admin-stat-sub">오늘 이후 일정</div>
+            </div>
+        </div>
+
+        <div class="admin-section-label">이벤트 목록</div>
+        <div class="admin-event-list" id="event-list">
+            <div class="admin-loading">불러오는 중…</div>
+        </div>
+    </main>
+
+    <script src="config.js"></script>
+    <script src="firebase.js"></script>
+    <script src="events.js"></script>
+    <script src="auth.js"></script>
+    <script src="admin-auth.js"></script>
+    <script src="event-admin.js"></script>
+</body>
+</html>

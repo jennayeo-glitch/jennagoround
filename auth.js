@@ -110,9 +110,11 @@ function loginWithKakao() {
                     
                     // Show user info (로그아웃 버튼으로 변경)
                     showUserInfo(user);
+
+                    window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: { user } }));
                     
-                    // Reload page if on event detail page to update participation button
-                    if (window.location.pathname.includes('event-detail.html')) {
+                    // Reload page if on event detail / admin pages to update UI
+                    if (/event-detail\.html|admin\.html|backoffice\.html|content-dashboard\.html/.test(window.location.pathname)) {
                         window.location.reload();
                     }
                     
@@ -137,9 +139,10 @@ function loginWithKakao() {
                     localStorage.setItem('kakao_user', JSON.stringify(user));
                     localStorage.setItem('kakao_access_token', authObj.access_token);
                     showUserInfo(user);
+
+                    window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: { user } }));
                     
-                    // Reload page if on event detail page to update participation button
-                    if (window.location.pathname.includes('event-detail.html')) {
+                    if (/event-detail\.html|admin\.html|backoffice\.html|content-dashboard\.html/.test(window.location.pathname)) {
                         window.location.reload();
                     }
                     

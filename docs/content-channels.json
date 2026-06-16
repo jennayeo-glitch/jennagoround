@@ -1,0 +1,51 @@
+[
+  {
+    "id": "youtube-personal",
+    "platform": "youtube",
+    "name": "여졍 유튜브",
+    "subtitle": "개인 채널 · 롱폼",
+    "handle": "@heeho2",
+    "url": "https://www.youtube.com/@heeho2",
+    "youtubeChannelId": "",
+    "accent": "#ff0000",
+    "icon": "▶",
+    "metrics": {
+      "subscribers": { "label": "구독자", "format": "number" },
+      "totalViews": { "label": "누적 조회수", "format": "number" },
+      "videoCount": { "label": "영상 수", "format": "number" },
+      "avgViews": { "label": "영상당 평균 조회", "format": "number" }
+    }
+  },
+  {
+    "id": "instagram-nangman",
+    "platform": "instagram",
+    "name": "FINDING NANGMAN",
+    "subtitle": "로테이션 소개팅 · 이벤트",
+    "handle": "@finding.nangman",
+    "url": "https://www.instagram.com/finding.nangman/",
+    "accent": "#e1306c",
+    "icon": "◎",
+    "metrics": {
+      "followers": { "label": "팔로워", "format": "number" },
+      "posts": { "label": "게시물", "format": "number" },
+      "reach": { "label": "월간 도달", "format": "number" },
+      "engagementRate": { "label": "참여율", "format": "percent" }
+    }
+  },
+  {
+    "id": "instagram-jennagoround",
+    "platform": "instagram",
+    "name": "jennagoround",
+    "subtitle": "모임 · 커뮤니티 브랜드",
+    "handle": "@jennagoround",
+    "url": "https://www.instagram.com/jennagoround/",
+    "accent": "#833ab4",
+    "icon": "◎",
+    "metrics": {
+      "followers": { "label": "팔로워", "format": "number" },
+      "posts": { "label": "게시물", "format": "number" },
+      "reach": { "label": "월간 도달", "format": "number" },
+      "engagementRate": { "label": "참여율", "format": "percent" }
+    }
+  }
+]
