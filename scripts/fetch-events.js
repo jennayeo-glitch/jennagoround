@@ -38,7 +38,7 @@ function guessCategory(item) { return CAT_MAP[item.cat2] || TYPE_MAP[item.conten
 
 // ── API 헬퍼 ───────────────────────────────────────────────────────────────
 function qs(extra = {}) {
-    return new URLSearchParams({ serviceKey: API_KEY, MobileOS:'ETC', MobileApp:'jennagoround', _type:'json', ...extra }).toString();
+    return new URLSearchParams({ serviceKey: API_KEY, MobileOS:'ETC', MobileApp:'FindingNangman', _type:'json', ...extra }).toString();
 }
 
 async function apiGet(endpoint, extra, retries = 2) {

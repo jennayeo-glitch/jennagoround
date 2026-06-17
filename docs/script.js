@@ -57,6 +57,11 @@ function renderEvents(filterCategory = 'all') {
         
         const displayStatus = displayEventStatus(event, actualCurrent);
 
+        const isNotified = event.comingSoon && !!localStorage.getItem(`notify_${event.id}`);
+        const notifyBtn = event.comingSoon
+            ? `<button class="notify-btn${isNotified ? ' notify-btn--on' : ''}" onclick="handleNotifyClick(event, '${event.id}', this)">${isNotified ? '알림 신청됨 ✓' : '알림받기'}</button>`
+            : '';
+
         eventCard.innerHTML = `
             <img src="${event.image}" alt="${event.alt}" class="event-poster-image">
             <div class="poster-overlay">
@@ -75,6 +80,7 @@ function renderEvents(filterCategory = 'all') {
                     </div>
                 </div>
             </div>
+            ${notifyBtn}
         `;
 
         // Add click event to navigate to detail page
@@ -405,3 +411,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+// ── 알림받기 (comingSoon 이벤트) ──────────────────────────────────────────
+window.handleNotifyClick = function(e, eventId, btn) {
+    e.stopPropagation();
+    const key = `notify_${eventId}`;
+    const already = localStorage.getItem(key);
+    if (already) {
+        localStorage.removeItem(key);
+        btn.textContent = '알림받기';
+        btn.classList.remove('notify-btn--on');
+    } else {
+        localStorage.setItem(key, '1');
+        btn.textContent = '알림 신청됨 ✓';
+        btn.classList.add('notify-btn--on');
+    }
+};

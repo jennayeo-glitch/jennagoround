@@ -23,9 +23,9 @@ const eventsData = [
     },
     {
         id: 10,
-        date: '2026-06-13',
-        displayDate: '2026.06.13',
-        location: '서울 용산구',
+        date: '',
+        displayDate: '오픈 알림받기',
+        location: '서울',
         meetupType: 'gathering',
         image: 'img/event/260613_smc.png',
         alt: 'SMC Saturday Morning Crochet',
@@ -36,7 +36,8 @@ const eventsData = [
         status: 'Available',
         category: 'regular gathering',
         kakaoChatUrl: '',
-        registrationOpen: true
+        registrationOpen: false,
+        comingSoon: true
     },
     {
         id: 9,

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /backoffice.html
+Disallow: /content-dashboard.html
+
+Sitemap: https://jennayeo-glitch.github.io/jennagoround/sitemap.xml

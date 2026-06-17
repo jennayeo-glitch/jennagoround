@@ -442,7 +442,7 @@ const CITY_EVENTS = [
     tags: ["하우스파티", "한남", "프라이빗", "소셜"],
   },
 
-  // ─── jennagoround 모임 (events.js) ───────────────────────────────────────
+  // ─── 파인딩낭만 모임 (events.js) ───────────────────────────────────────
   {
     id: "jg-9-260404",
     title: "BUTTER RUN",
@@ -456,7 +456,7 @@ const CITY_EVENTS = [
     description:
       "버텨야 돼 버터런, 막차 츌바알. 4/4 8AM–11AM · 코스: 복정역 출발 – 야탑 – 정자 해산. 러닝·벚꽃·베이글·사교 알러지 주의.",
     price: "문의",
-    tags: ["런닝", "탄천", "모닝", "jennagoround"],
+    tags: ["런닝", "탄천", "모닝", "파인딩낭만"],
   },
   {
     id: "jg-1-260221",
@@ -471,7 +471,7 @@ const CITY_EVENTS = [
     description:
       "도파민 디톡스 컨셉 생일 모임. 시끌벅적한 자극은 잠시 내려놓고 맛있는 것과 휴식. 막차 타고 집으로.",
     price: "문의",
-    tags: ["생일", "소모임", "강남", "jennagoround"],
+    tags: ["생일", "소모임", "강남", "파인딩낭만"],
   },
   {
     id: "jg-2-260213",
@@ -483,9 +483,9 @@ const CITY_EVENTS = [
     address: "서울 영등포구",
     lat: 37.5189,
     lng: 126.9025,
-    description: "영등포에서 열린 jennagoround 정기 모임.",
+    description: "영등포에서 열린 파인딩낭만 정기 모임.",
     price: "문의",
-    tags: ["게더링", "영등포", "jennagoround"],
+    tags: ["게더링", "영등포", "파인딩낭만"],
   },
   {
     id: "jg-case-251101",
@@ -499,7 +499,7 @@ const CITY_EVENTS = [
     lng: 127.0324,
     description: "대규모 네트워킹·파티 이벤트.",
     price: "문의",
-    tags: ["네트워킹", "서초", "jennagoround"],
+    tags: ["네트워킹", "서초", "파인딩낭만"],
   },
   {
     id: "jg-jae-240830",
@@ -513,7 +513,7 @@ const CITY_EVENTS = [
     lng: 127.1058,
     description: "Jae Special Night 시리즈.",
     price: "문의",
-    tags: ["파티", "송파", "jennagoround"],
+    tags: ["파티", "송파", "파인딩낭만"],
   },
   {
     id: "jg-8-251018",
@@ -527,7 +527,7 @@ const CITY_EVENTS = [
     lng: 126.9903,
     description: "용산에서 열린 스페셜 나이트.",
     price: "문의",
-    tags: ["네트워킹", "용산", "jennagoround"],
+    tags: ["네트워킹", "용산", "파인딩낭만"],
   },
   {
     id: "jg-tot-241101",
@@ -541,7 +541,7 @@ const CITY_EVENTS = [
     lng: 126.9724,
     description: "TOT 시리즈 모임.",
     price: "문의",
-    tags: ["소모임", "용산", "jennagoround"],
+    tags: ["소모임", "용산", "파인딩낭만"],
   },
   {
     id: "jg-jae-230730",
@@ -555,7 +555,7 @@ const CITY_EVENTS = [
     lng: 127.0394,
     description: "강남에서 열린 Jae Special Night.",
     price: "문의",
-    tags: ["네트워킹", "강남", "jennagoround"],
+    tags: ["네트워킹", "강남", "파인딩낭만"],
   },
   {
     id: "jg-tot-221029",
@@ -569,7 +569,7 @@ const CITY_EVENTS = [
     lng: 126.996,
     description: "TOT 22 모임.",
     price: "문의",
-    tags: ["소모임", "용산", "jennagoround"],
+    tags: ["소모임", "용산", "파인딩낭만"],
   },
   {
     id: "jg-7-211029",
@@ -583,7 +583,7 @@ const CITY_EVENTS = [
     lng: 126.985,
     description: "할로윈 파티.",
     price: "문의",
-    tags: ["할로윈", "용산", "jennagoround"],
+    tags: ["할로윈", "용산", "파인딩낭만"],
   },
 
   // ─── 모임 · 소셜 (추가) ──────────────────────────────────────────────────

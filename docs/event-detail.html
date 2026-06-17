@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-    <title>이벤트 상세 - 해피여졍</title>
-    <meta property="og:title" content="이벤트 상세 - 해피여졍">
+    <title>이벤트 상세 — Finding Nangman</title>
+    <meta name="description" content="Finding Nangman 이벤트 상세 페이지">
+    <meta property="og:title" content="이벤트 상세 — Finding Nangman">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jennayeo-glitch.github.io/jennagoround/event-detail.html">
-    <meta property="og:description" content="해피여졍 이벤트 상세 페이지">
+    <meta property="og:description" content="Finding Nangman 이벤트 상세 페이지">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -233,6 +234,33 @@
 
         .participate-button.participated:hover .participate-label--hover {
             display: inline;
+        }
+
+        /* 준비중 블록 */
+        .coming-soon-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .coming-soon-badge {
+            display: inline-block;
+            background: #f3f4f6;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            padding: 5px 14px;
+            border-radius: 999px;
+        }
+
+        .coming-soon-text {
+            font-size: 14px;
+            color: var(--text-gray, #6b7280);
+            line-height: 1.7;
         }
 
         .event-detail-schedule h2 {
@@ -661,7 +689,7 @@
         }
     </style>
   <link rel="stylesheet" crossorigin href="./assets/detail-CMP-_Jno.css">
-  <link rel="stylesheet" crossorigin href="./assets/styles-DbiYfY7D.css">
+  <link rel="stylesheet" crossorigin href="./assets/styles-KKSMfim9.css">
 </head>
 <body>
     <header class="header">
@@ -673,7 +701,7 @@
             </div>
             <nav class="header-nav">
                 <a href="index.html" class="nav-link">서비스</a>
-                <a href="map.html" class="nav-link">이벤트 지도</a>
+                <!-- <a href="map.html" class="nav-link">이벤트 지도</a> -->
                 <a href="index.html" class="nav-link">마이페이지</a>
                 <a href="index.html" class="nav-link">문의하기</a>
                 <div class="auth-section">
@@ -717,6 +745,37 @@
         </div>
     </main>
 
+    <footer class="site-footer">
+        <div class="site-footer__inner">
+            <div class="site-footer__brand">
+                <div class="footer-logo">Finding Nangman</div>
+                <p>잃어버린 낭만 되찾기</p>
+            </div>
+            <div class="site-footer__biz">
+                <dl>
+                    <dt>상호</dt><dd>iRave</dd>
+                    <dt>대표자</dt><dd>여지영</dd>
+                    <dt>사업자등록번호</dt><dd>226-18-62433</dd>
+                    <dt>주소</dt><dd>서울특별시 용산구 원효로 97길</dd>
+                    <dt>문의</dt><dd><a href="mailto:irave.official@gmail.com" style="color:var(--text-gray);text-decoration:none">irave.official@gmail.com</a></dd>
+                </dl>
+            </div>
+        </div>
+        <div class="site-footer__bottom">
+            <div class="footer-links">
+                <a href="privacy.html">개인정보처리방침</a>
+                <a href="terms.html">이용약관</a>
+            </div>
+            <div class="footer-sns">
+                <a href="https://www.instagram.com/finding_nangman_/" target="_blank" rel="noopener">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    @finding_nangman_
+                </a>
+            </div>
+            <div class="footer-copyright">© 2026 iRave. All rights reserved.</div>
+        </div>
+    </footer>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -737,12 +796,12 @@
         // Update page title dynamically
         if (event) {
             const eventTitle = event.title || event.alt;
-            document.title = `${eventTitle} - 해피여졍`;
+            document.title = `${eventTitle} - Finding Nangman`;
             
             // Update Open Graph meta tags
             const ogTitle = document.querySelector('meta[property="og:title"]');
             const ogDescription = document.querySelector('meta[property="og:description"]');
-            if (ogTitle) ogTitle.setAttribute('content', `${eventTitle} - 해피여졍`);
+            if (ogTitle) ogTitle.setAttribute('content', `${eventTitle} - Finding Nangman`);
             if (ogDescription) ogDescription.setAttribute('content', event.description || `${eventTitle} 이벤트 상세 정보`);
         }
 
@@ -815,6 +874,21 @@
                             </div>`;
                 }
 
+                if (event.comingSoon) {
+                    const notifyKey = `notify_${event.id}`;
+                    const isNotified = !!localStorage.getItem(notifyKey);
+                    scheduleSection.innerHTML = `
+                        <div class="tab-content-schedule">
+                            <div class="coming-soon-block">
+                                <div class="coming-soon-badge">준비중</div>
+                                <div class="coming-soon-text">일정이 곧 공개됩니다.<br>알림을 신청하면 오픈 소식을 가장 먼저 받을 수 있어요.</div>
+                                <button id="detail-notify-btn" class="participate-button${isNotified ? ' participated' : ''}" onclick="toggleDetailNotify(${event.id}, this)">
+                                    ${isNotified ? '알림 신청됨 ✓' : '알림받기'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
                 const kakaoChatUrl = (event.kakaoChatUrl || '').trim();
                 const kakaoChatBtn = kakaoChatUrl
                     ? `<a href="${kakaoChatUrl.replace(/"/g, '&quot;')}" class="participate-button participate-button--secondary" target="_blank" rel="noopener noreferrer">톡방 입장</a>`
@@ -848,6 +922,7 @@
                         </div>
                     </div>
                 `;
+                } // end else (not comingSoon)
             }
 
             // Render participants section
@@ -1506,6 +1581,21 @@
         } else {
             setTimeout(initializeTabs, 100);
         }
+    </script>
+    <script>
+        window.toggleDetailNotify = function(eventId, btn) {
+            const key = `notify_${eventId}`;
+            const already = localStorage.getItem(key);
+            if (already) {
+                localStorage.removeItem(key);
+                btn.textContent = '알림받기';
+                btn.classList.remove('participated');
+            } else {
+                localStorage.setItem(key, '1');
+                btn.textContent = '알림 신청됨 ✓';
+                btn.classList.add('participated');
+            }
+        };
     </script>
 </body>
 </html>
